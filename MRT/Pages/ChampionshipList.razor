@@ -1,0 +1,48 @@
+﻿@page "/championshiplist"
+@using MRT.Data
+@using MRT.Data.ResultModels
+@inject ResultsService ResultsService
+
+<PageTitle>Championships</PageTitle>
+
+<h1>List of Championships</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (championships == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Organiser</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var championship in championships)
+            {
+                <tr>
+                    <td>@championship.Name</td>
+                    <td>@championship.StartDate.ToShortDateString()</td>
+                    <td>@championship.EndDate.ToShortDateString()</td>
+                    <td>@championship.ChampionshipOrganiser?.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Championship[]? championships;
+
+    protected override async Task OnInitializedAsync()
+    {
+        championships = await ResultsService.GetChampionshipsAsync();
+    }
+}

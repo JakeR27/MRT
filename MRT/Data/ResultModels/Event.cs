@@ -2,11 +2,12 @@
 {
     public record Event
     {
-        public Guid Id { get; set; }
-        public string? Name { get; set; }
-        public Location Location { get; set; }
-        public Championship Championship { get; set; }
-        public DateTime Date{ get; set; }
+        public Guid Id { get; init; }
+        public string? Name { get; init; }
+        public Location Location { get; init; }
+        public Championship Championship { get; init; }
+        public DateTime StartDate { get; init; }
+        public DateTime EndDate { get; init; }
 
     }
 }

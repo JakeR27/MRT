@@ -1,0 +1,103 @@
+﻿@page "/event"
+@using MRT.Data
+@using MRT.Data.ResultModels
+@using Microsoft.AspNetCore.WebUtilities
+@inject ResultsService ResultsService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Event</PageTitle>
+
+<h1>Event Overview</h1>
+
+<p>This component provides an overview of an event that has information recorded in MRT.</p>
+
+@if (ev == null)
+{
+    @if (parameterProvided == false)
+    {
+        <p><b>No event ID was provided</b></p>
+    }
+    else
+    {
+        <p><em>Loading...</em></p>
+    }
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Organiser</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@ev.Name</td>
+                <td><LocationLink Location="@ev.Location"/></td>
+                <td>@ev.StartDate.ToShortDateString()</td>
+                <td>@ev.EndDate.ToShortDateString()</td>
+                <td>@ev.Championship.Name</td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Start Position</th>
+                <th>Finish Position (After Penalties)</th>
+                <th>Positions Gained/Lost</th>
+                <th>Position Penalties Received</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var result in results)
+            {
+                <tr>
+                    <td>@result.Competitor?.Name</td>
+                    <td>@result.StartPosition</td>
+                    <td>@result.FinishOnTrackPosition (@result.FinishOnResultPosition)</td>
+                    <td>@(result.StartPosition - result.FinishOnResultPosition)</td>
+                    <td>@result.PenaltiesReceived?.Sum(penalty => penalty.PositionPenalty)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public Guid EventId { get; set; }
+
+    private bool parameterProvided = true; 
+    
+    private Event? ev;
+    private Result[] results = new [] { new Result() };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("eventId", out var _eventId))
+        {
+            EventId = Guid.Parse(_eventId);
+        }
+
+        if (EventId == Guid.Empty)
+        {
+            parameterProvided = false;
+        }
+        
+        ev = await ResultsService.GetEventAsync(EventId);
+        // results = await ResultsService.GetResultsAsync(EventId);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await OnInitializedAsync();
+    }
+    
+}

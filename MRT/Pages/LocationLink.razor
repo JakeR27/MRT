@@ -1,0 +1,8 @@
+﻿@using MRT.Data.ResultModels
+
+<a href="location?locationId=@Location?.Id">@Location?.Name</a>
+
+@code {
+    [Parameter]
+    public Location? Location { get; set; }
+}

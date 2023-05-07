@@ -1,0 +1,46 @@
+﻿@page "/organisers"
+@using MRT.Data
+@using MRT.Data.ResultModels
+@inject ResultsService ResultsService
+
+<PageTitle>Organisers</PageTitle>
+
+<h1>List of Organisers</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (organisers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Organiser</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var organiser in organisers)
+        {
+            <tr>
+                <td>
+                    <a href="championships?organiserId=@organiser.Id">@organiser.Name</a>
+                    
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Organiser[]? organisers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        organisers = await ResultsService.GetOrganisersAsync();
+    }
+}

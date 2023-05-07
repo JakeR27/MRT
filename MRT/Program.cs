@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MRT.Data;
+using MRT.Data.ResultModels;
 
 namespace MRT
 {
@@ -15,6 +16,7 @@ namespace MRT
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<WeatherForecastService>();
             builder.Services.AddSingleton<ResultsService>();
+            builder.Services.AddSingleton<PersistService>();
 
             var app = builder.Build();
 
@@ -25,6 +27,9 @@ namespace MRT
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            //PersistService.AddOrganiser(new Organiser {Id = Guid.NewGuid(), Name = "Club 100"});
+            DataSetup.Set();
 
             app.UseHttpsRedirection();
 

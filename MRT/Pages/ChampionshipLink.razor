@@ -1,0 +1,20 @@
+﻿@using MRT.Data.ResultModels
+
+@{
+    string yearText;
+    if (Championship?.StartDate.Year == Championship?.EndDate.Year)
+    {
+        yearText = $"{Championship?.StartDate.Year}";
+    }
+    else
+    {
+        yearText = $"{Championship?.StartDate.Year}/{Championship?.EndDate.Year}";
+    }
+}
+
+<a href="events?championshipId=@Championship?.Id">@Championship?.Name (@yearText)</a>
+
+@code {
+    [Parameter]
+    public Championship? Championship { get; set; }
+}

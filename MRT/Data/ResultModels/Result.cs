@@ -8,6 +8,15 @@ public record Result
     public int FinishOnResultPosition { get; init; }
     public List<Penalty> PenaltiesReceived { get; init; }
     
-    public Competitor Competitor { get; init; }
-    public Team Team { get; init; }
+    private Guid CompetitorId { get; init; }
+    public Competitor Competitor { 
+        get => PersistService.GetCompetitorById(CompetitorId);
+        init => CompetitorId = value.Id;
+    }
+    private Guid TeamID { get; init; }
+    public Team Team
+    {
+        get => PersistService.GetTeamById(TeamID);
+        init => TeamID = value.Id;
+    }
 }

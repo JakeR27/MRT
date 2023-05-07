@@ -1,4 +1,6 @@
-﻿namespace MRT.Data.ResultModels
+﻿using Microsoft.AspNetCore;
+
+namespace MRT.Data.ResultModels
 {
     public record Championship
     {
@@ -7,7 +9,12 @@
         public DateTime StartDate { get; init; }
         public DateTime EndDate { get; init; }
 
-        public Organiser? ChampionshipOrganiser {get; init; }
+        private Guid? ChampionshipOrganiserId { get; init; }
+        public Organiser? ChampionshipOrganiser 
+        {
+            get => PersistService.GetOrganiserById(ChampionshipOrganiserId);
+            init => ChampionshipOrganiserId = value?.Id;
+        }
 
     }
 }

@@ -29,7 +29,8 @@ namespace MRT
             }
 
             //PersistService.AddOrganiser(new Organiser {Id = Guid.NewGuid(), Name = "Club 100"});
-            DataSetup.Set();
+            //DataSetup.Set();
+            PersistService.Load();
 
             app.UseHttpsRedirection();
 

@@ -1,15 +1,19 @@
-﻿namespace MRT.Data.ResultModels
+﻿using LiteDB;
+
+namespace MRT.Data.ResultModels
 {
     public record Event
     {
         public Guid Id { get; init; }
         public string? Name { get; init; }
-        private Guid LocationId { get; init; }
+        public Guid LocationId { get; init; }
+        [BsonIgnore]
         public Location Location { 
             get => PersistService.GetLocationById(LocationId);
             init => LocationId = value.Id;
         }
-        private Guid ChampionshipId { get; init; }
+        public Guid ChampionshipId { get; init; }
+        [BsonIgnore]
         public Championship Championship { 
             get => PersistService.GetChampionshipById(ChampionshipId);
             init => ChampionshipId = value.Id;

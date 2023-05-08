@@ -140,6 +140,62 @@ public class DataSetup
             Location = gyg
         };
         PersistService.AddEvent(bukc2022r6m);
+
+        var jbs = new Competitor {Id = Guid.NewGuid(), Name = "Jake Bailey-Saltmarsh"};
+        var ac = new Competitor {Id = Guid.NewGuid(), Name = "Adam Curness"};
+        var kh = new Competitor {Id = Guid.NewGuid(), Name = "Kieran Harrison"};
+        var hh = new Competitor {Id = Guid.NewGuid(), Name = "Henry Hudson"};
+        PersistService.AddCompetitor(jbs);
+        PersistService.AddCompetitor(ac);
+        PersistService.AddCompetitor(kh);
+        PersistService.AddCompetitor(hh);
         
+        var leedsa = new Team {Id = Guid.NewGuid(), Name = "Leeds A"};
+        PersistService.AddTeam(leedsa);
+
+        var bukc2022qq7 = new Race
+        {
+            Id = Guid.NewGuid(),
+            StartDate = new DateTime(2022, 11, 19, 12, 06, 0),
+            EndDate = new DateTime(2022, 11, 19, 12, 36, 0),
+            Event = bukc2022q,
+            Name = "Qualifying 7"
+        };
+        var bukc2022qq7kh = new Result
+        {
+            Id = Guid.NewGuid(),
+            Competitor = kh,
+            FinishOnResultPosition = 1,
+            FinishOnTrackPosition = 1,
+            PenaltiesReceived = new List<Penalty>(),
+            Race = bukc2022qq7,
+            StartPosition = 2,
+            Team = leedsa
+        };
+        PersistService.AddRace(bukc2022qq7);
+        PersistService.AddResult(bukc2022qq7kh);
+        
+        var bukc2022qr7 = new Race
+        {
+            Id = Guid.NewGuid(),
+            StartDate = new DateTime(2022, 11, 19, 16, 55, 0),
+            EndDate = new DateTime(2022, 11, 19, 17, 25, 0),
+            Event = bukc2022q,
+            Name="Race 7"
+        };
+        var bukc2022qr7kh = new Result
+        {
+            Id = Guid.NewGuid(),
+            Competitor = kh,
+            FinishOnResultPosition = 1,
+            FinishOnTrackPosition = 1,
+            PenaltiesReceived = new List<Penalty>(),
+            Race = bukc2022qq7,
+            StartPosition = 1,
+            Team = leedsa
+        };
+        PersistService.AddRace(bukc2022qr7);
+        PersistService.AddResult(bukc2022qr7kh);
+
     }
 }

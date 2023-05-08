@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore;
+﻿using LiteDB;
+using Microsoft.AspNetCore;
 
 namespace MRT.Data.ResultModels
 {
@@ -9,7 +10,8 @@ namespace MRT.Data.ResultModels
         public DateTime StartDate { get; init; }
         public DateTime EndDate { get; init; }
 
-        private Guid? ChampionshipOrganiserId { get; init; }
+        public Guid? ChampionshipOrganiserId { get; init; }
+        [BsonIgnore]
         public Organiser? ChampionshipOrganiser 
         {
             get => PersistService.GetOrganiserById(ChampionshipOrganiserId);

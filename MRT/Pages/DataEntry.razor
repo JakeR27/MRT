@@ -1,0 +1,40 @@
+﻿@page "/dataentry"
+@using MRT.Data.FormModels
+@using MRT.Data
+@using MRT.Pages.Forms
+
+
+<h1>Data Entry</h1>
+This page is for entering data into the database.
+<br/>
+<CompetitorEntry onSubmitAction="@LoadData"/>
+<br/>
+<TeamEntry onSubmitAction="@LoadData"/>
+<br/>
+<RaceEntry events="@events" onSubmitAction="@LoadData"/>
+<br/>
+<ResultEntry races="@races" teams="@teams" competitors="@competitors" onSubmitAction="@LoadData"/>
+
+
+
+
+@code {
+    List<Data.ResultModels.Team> teams { get; set; }
+    List<Data.ResultModels.Competitor> competitors { get; set; }
+    List<Data.ResultModels.Race> races { get; set; }
+    List<Data.ResultModels.Event> events { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+    
+    private void LoadData()
+    {
+        teams = PersistService.Teams;
+        competitors = PersistService.Competitors;
+        races = PersistService.Races;
+        events = PersistService.Events;
+        StateHasChanged();
+    }
+}

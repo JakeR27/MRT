@@ -1,0 +1,46 @@
+﻿@page "/competitors"
+@using MRT.Data
+@using MRT.Data.ResultModels
+@inject ResultsService ResultsService
+
+<PageTitle>Competitors</PageTitle>
+
+<h1>List of Competitors</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (competitors == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Organiser</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var competitor in competitors)
+        {
+            <tr>
+                <td>
+                    <a href="competitor?competitorId=@competitor.Id">@competitor.Name</a>
+                    
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Competitor[]? competitors;
+
+    protected override async Task OnInitializedAsync()
+    {
+        competitors = await ResultsService.GetCompetitorsAsync();
+    }
+}

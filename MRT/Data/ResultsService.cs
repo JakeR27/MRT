@@ -73,6 +73,11 @@ public class ResultsService
     //         Name = "Saturday Qualifiers"
     //     }
     // };
+    private static Race[] _races => PersistService.Races.ToArray();
+    private static Result[] _results => PersistService.Results.ToArray();
+    private static Competitor[] _competitors => PersistService.Competitors.ToArray();
+    
+    private static Team[] _teams => PersistService.Teams.ToArray();
     
     public Task<Championship[]> GetChampionshipsAsync()
     {
@@ -110,6 +115,11 @@ public class ResultsService
     public Task<Location?> GetLocationAsync(Guid id)
     {
         return Task.FromResult(_locations.FirstOrDefault(location => location.Id == id));
+    }
+    
+    public Task<Competitor[]> GetCompetitorsAsync()
+    {
+        return Task.FromResult(_competitors);
     }
     
     public Task<Event?> GetEventAsync(Guid id)
@@ -153,5 +163,32 @@ public class ResultsService
         }
         
         return Task.FromResult(_events.Where(ev => ev.Championship.Id == championship.Id && ev.Location.Id == location.Id).ToArray());
+    }
+    
+    public Task<Result[]> GetResultsAsync(Competitor competitor)
+    {
+        return Task.FromResult(_results.Where(result => result.Competitor.Id == competitor.Id).ToArray());
+    }
+
+    public Task<Result[]> GetResultsAsync(Event ev)
+    {
+        return Task.FromResult(_results.Where(result => result.Race.Event.Id == ev.Id).ToArray());
+    }
+    
+    public Task<Competitor?> GetCompetitorAsync(Guid id)
+    {
+        return Task.FromResult(_competitors.FirstOrDefault(competitor => competitor.Id == id));
+    }
+    
+    public Task<Team[]> GetTeamsAsync(Competitor competitor)
+    {
+        var results = _results.Where(result => result.Competitor.Id == competitor.Id).ToList();
+        var teams = results.Select(result => result.Team).Distinct().ToArray();
+        return Task.FromResult(teams);
+    }
+
+    public Task<Race[]> GetRacesAsync()
+    {
+        return Task.FromResult(_races);
     }
 }

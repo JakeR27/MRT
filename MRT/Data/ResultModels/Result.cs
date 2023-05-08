@@ -1,4 +1,6 @@
-﻿namespace MRT.Data.ResultModels;
+﻿using LiteDB;
+
+namespace MRT.Data.ResultModels;
 
 public record Result
 {
@@ -7,16 +9,26 @@ public record Result
     public int FinishOnTrackPosition { get; init; }
     public int FinishOnResultPosition { get; init; }
     public List<Penalty> PenaltiesReceived { get; init; }
+    public Guid RaceId { get; init; }
+    [BsonIgnore]
+
+    public Race Race
+    {
+        get => PersistService.GetRaceById(RaceId);
+        init => RaceId = value.Id;
+    }
     
-    private Guid CompetitorId { get; init; }
+    public Guid CompetitorId { get; init; }
+    [BsonIgnore]
     public Competitor Competitor { 
         get => PersistService.GetCompetitorById(CompetitorId);
         init => CompetitorId = value.Id;
     }
-    private Guid TeamID { get; init; }
+    public Guid TeamId { get; init; }
+    [BsonIgnore]
     public Team Team
     {
-        get => PersistService.GetTeamById(TeamID);
-        init => TeamID = value.Id;
+        get => PersistService.GetTeamById(TeamId);
+        init => TeamId = value.Id;
     }
 }

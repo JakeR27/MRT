@@ -1,0 +1,49 @@
+﻿@using MRT.Data.FormModels
+@using MRT.Data
+
+<h3>New Race</h3>
+<EditForm Model="@entry" OnSubmit="@HandleSubmit">
+    <label for="name">Name</label>
+    <InputText id="name" @bind-Value="entry.Name"/>
+    
+    <br/>
+    <label for="start-date">Start Date</label>
+    <InputDate id="start-date" @bind-Value="entry.StartDate"/>
+
+    <br/>
+    <label for="end-date">End Date</label>
+    <InputDate id="end-date" @bind-Value="entry.EndDate"/>
+    
+    <br/>
+    <InputSelect id="race-id" @bind-Value="entry.EventId">
+        @foreach( var ev in events)
+        {
+            <option value="@ev.Id">@ev.Name (@ev.Championship.Name)</option>
+        }
+    </InputSelect>
+    
+    <br/>
+    <button type="submit">Add</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public EventCallback onSubmitAction { get; set; }
+    
+    [Parameter]
+    public List<Data.ResultModels.Event> events { get; set; }
+    
+    Race entry = new();
+
+    private async void HandleSubmit()
+    {
+        var record = entry.ToRecord();
+        entry.Name = "";
+        entry.EventId = Guid.Empty;
+        entry.StartDate = DateTime.MinValue;
+        entry.EndDate = DateTime.MinValue;
+        PersistService.AddRace(record);
+
+        await onSubmitAction.InvokeAsync();
+    }
+}

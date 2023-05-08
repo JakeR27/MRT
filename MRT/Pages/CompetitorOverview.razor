@@ -1,21 +1,22 @@
-﻿@page "/event"
+﻿@page "/competitor"
 @using MRT.Data
 @using MRT.Data.ResultModels
 @using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.AspNetCore.Server.Kestrel.Core
 @inject ResultsService ResultsService
 @inject NavigationManager NavigationManager
 
-<PageTitle>Event</PageTitle>
+<PageTitle>Competitor</PageTitle>
 
-<h1>Event Overview</h1>
+<h1>Competitor Overview</h1>
 
 <p>This component provides an overview of an event that has information recorded in MRT.</p>
 
-@if (ev == null)
+@if (competitor == null)
 {
     @if (parameterProvided == false)
     {
-        <p><b>No event ID was provided</b></p>
+        <p><b>No competitor ID was provided</b></p>
     }
     else
     {
@@ -24,26 +25,23 @@
 }
 else
 {
+    <h3>Teams</h3>
     <table class="table">
         <thead>
         <tr>
             <th>Name</th>
-            <th>Location</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Organiser</th>
         </tr>
         </thead>
         <tbody>
+        @foreach (var team in teams)
+        {
             <tr>
-                <td>@ev.Name</td>
-                <td><LocationLink Location="@ev.Location"/></td>
-                <td>@ev.StartDate.ToShortDateString()</td>
-                <td>@ev.EndDate.ToShortDateString()</td>
-                <td>@ev.Championship.Name</td>
+                <td>@team.Name</td>
             </tr>
+        }
         </tbody>
     </table>
+    <h3>Results</h3>
     <table class="table">
         <thead>
             <tr>
@@ -52,6 +50,8 @@ else
                 <th>Finish Position (After Penalties)</th>
                 <th>Positions Gained/Lost</th>
                 <th>Position Penalties Received</th>
+                <th>Event</th>
+                <th>Championship</th>
             </tr>
         </thead>
         <tbody>
@@ -63,6 +63,8 @@ else
                     <td>@result.FinishOnTrackPosition (@result.FinishOnResultPosition)</td>
                     <td>@(result.StartPosition - result.FinishOnResultPosition)</td>
                     <td>@result.PenaltiesReceived?.Sum(penalty => penalty.PositionPenalty)</td>
+                    <td>@result.Race.Event.Name</td>
+                    <td><ChampionshipLink Championship="@result.Race.Event.Championship"/></td>
                 </tr>
             }
         </tbody>
@@ -71,28 +73,30 @@ else
 
 @code {
     [Parameter]
-    public Guid EventId { get; set; }
+    public Guid CompetitorId { get; set; }
 
     private bool parameterProvided = true; 
     
-    private Event? ev;
+    private Competitor? competitor;
+    private Team[] teams = new [] { new Team() };
     private Result[] results = new [] { new Result() };
 
     protected override async Task OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("eventId", out var _eventId))
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("competitorId", out var _competitorId))
         {
-            EventId = Guid.Parse(_eventId);
+            CompetitorId = Guid.Parse(_competitorId);
         }
 
-        if (EventId == Guid.Empty)
+        if (CompetitorId == Guid.Empty)
         {
             parameterProvided = false;
         }
-        
-        ev = await ResultsService.GetEventAsync(EventId);
-        results = await ResultsService.GetResultsAsync(ev);
+
+        competitor = await ResultsService.GetCompetitorAsync(CompetitorId);
+        results = await ResultsService.GetResultsAsync(competitor);
+        teams = await ResultsService.GetTeamsAsync(competitor);
     }
 
     protected override async Task OnParametersSetAsync()

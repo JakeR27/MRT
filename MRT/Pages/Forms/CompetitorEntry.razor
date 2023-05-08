@@ -1,0 +1,26 @@
+﻿@using MRT.Data.FormModels
+@using MRT.Data
+
+<h3>New Competitor</h3>
+<EditForm Model="@competitorEntry" OnSubmit="@HandleCompetitorSubmit">
+    <label for="name">Competitor Name</label>
+    <InputText id="name" @bind-Value="competitorEntry.Name"/>
+    <br/>
+    <button type="submit">Add</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public EventCallback onSubmitAction { get; set; }
+
+    Competitor competitorEntry = new();
+
+    private async void HandleCompetitorSubmit()
+    {
+        var record = competitorEntry.ToRecord();
+        competitorEntry.Name = "";
+        PersistService.AddCompetitor(record);
+        
+        await onSubmitAction.InvokeAsync();
+    }
+}

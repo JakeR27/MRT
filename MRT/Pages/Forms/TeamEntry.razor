@@ -1,0 +1,26 @@
+﻿@using MRT.Data.FormModels
+@using MRT.Data
+
+<h3>New Team</h3>
+<EditForm Model="@teamEntry" OnSubmit="@HandleTeamSubmit">
+    <label for="name">Team Name</label>
+    <InputText id="name" @bind-Value="teamEntry.Name"/>
+    <button type="submit">Add</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public EventCallback onSubmitAction { get; set; }
+    
+    Team teamEntry = new();
+
+
+    private async void HandleTeamSubmit()
+    {
+        var record = teamEntry.ToRecord();
+        teamEntry.Name = "";
+        PersistService.AddTeam(record);
+        
+        await onSubmitAction.InvokeAsync();
+    }
+}

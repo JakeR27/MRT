@@ -1,0 +1,75 @@
+﻿@using MRT.Data.FormModels
+@using MRT.Data
+
+<h3>New Result</h3>
+<EditForm Model="@entry" OnSubmit="@HandleSubmit">
+    <label for="start-position">Start Position</label>
+    <InputNumber id="start-position" @bind-Value="entry.StartPosition"/>
+    
+    <br/>
+    <label for="finish-track">Finish Position (On Track)</label>
+    <InputNumber id="finish-track" @bind-Value="entry.FinishOnTrackPosition"/>
+    
+    <br/>
+    <label for="finish-result">Finish Position (After Penalties)</label>
+    <InputNumber id="finish-result" @bind-Value="entry.FinishOnResultPosition"/>
+    
+    <br/>
+    <label for="race-id">Race</label>
+    <InputSelect id="race-id" @bind-Value="entry.RaceId">
+        @foreach( var race in races)
+        {
+            <option value="@race.Id">@race.Name - @race.Event.Name (@race.Event.Championship.Name)</option>
+        }
+    </InputSelect>
+    
+    <br/>
+    <label for="competitor-id">Competitor</label>
+    <InputSelect id="competitor-id" @bind-Value="entry.CompetitorId">
+        @foreach( var competitor in competitors)
+        {
+            <option value="@competitor.Id">@competitor.Name</option>
+        }
+    </InputSelect>
+    
+    <br/>
+    <label for="team-id">Team</label>
+    <InputSelect id="team-id" @bind-Value="entry.TeamId">
+        @foreach( var team in teams)
+        {
+            <option value="@team.Id">@team.Name</option>
+        }
+    </InputSelect>
+    
+    <br/>
+    <button type="submit">Add</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public EventCallback onSubmitAction { get; set; }
+    
+    Result entry = new();
+
+    [Parameter]
+    public List<Data.ResultModels.Team> teams { get; set; }
+    [Parameter]
+    public List<Data.ResultModels.Competitor> competitors { get; set; }
+    [Parameter]
+    public List<Data.ResultModels.Race> races { get; set; }
+
+    private async void HandleSubmit()
+    {
+        var record = entry.ToRecord();
+        entry.StartPosition = 0;
+        entry.FinishOnTrackPosition = 0;
+        entry.FinishOnResultPosition = 0;
+        entry.RaceId = Guid.Empty;
+        entry.CompetitorId = Guid.Empty;
+        entry.TeamId = Guid.Empty;
+        PersistService.AddResult(record);
+        
+        await onSubmitAction.InvokeAsync();
+        
+    }
+}

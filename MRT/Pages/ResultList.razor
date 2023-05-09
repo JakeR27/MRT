@@ -1,0 +1,63 @@
+﻿@page "/results"
+@using MRT.Data
+@using MRT.Data.ResultModels
+@using MRT.Pages.Links
+@using MRT.Pages.Tables
+@using Microsoft.AspNetCore.WebUtilities
+@inject ResultsService ResultsService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Results</PageTitle>
+
+<h1>List of Results</h1>
+
+<p>This component provides an overview of an results that have information recorded in MRT.</p>
+
+@if (results == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @if (race != null)
+    {
+        <RaceTable races="@(new[] {race})"/>
+    }
+    
+    <ResultTable results="@results"/>
+}
+
+@code {
+    [Parameter]
+    public Guid RaceId { get; set; }
+
+    private Race? race;
+    private Result[]? results;
+
+    protected override async Task OnInitializedAsync()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+        NavigationManager.LocationChanged += OnLocationChanged;
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("raceId", out var _raceId))
+        {
+            RaceId = Guid.Parse(_raceId);
+        }
+
+        race = await ResultsService.GetRaceAsync(RaceId);
+        results = await ResultsService.GetResultsAsync(race);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await OnInitializedAsync();
+    }
+    
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        RaceId = Guid.Empty;
+        await OnInitializedAsync();
+        StateHasChanged();
+    }
+    
+}

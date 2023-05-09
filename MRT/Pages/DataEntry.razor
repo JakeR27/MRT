@@ -6,23 +6,56 @@
 
 <h1>Data Entry</h1>
 This page is for entering data into the database.
-<br/>
-<CompetitorEntry onSubmitAction="@LoadData"/>
-<br/>
-<TeamEntry onSubmitAction="@LoadData"/>
-<br/>
-<RaceEntry events="@events" onSubmitAction="@LoadData"/>
-<br/>
-<ResultEntry races="@races" teams="@teams" competitors="@competitors" onSubmitAction="@LoadData"/>
 
+<InputSelect class="form-select" @bind-Value="currentEntryType">
+    @foreach(var entryType in Enum.GetValues(typeof(EntryType)))
+    {
+        <option value="@entryType">@entryType</option>
+    }
+</InputSelect>
+<hr/>
 
-
+@if (currentEntryType == EntryType.Competitor)
+{
+    <CompetitorEntry onSubmitAction="@LoadData"/>
+}
+@if (currentEntryType == EntryType.Team)
+{
+    <TeamEntry onSubmitAction="@LoadData"/>
+}
+@if (currentEntryType == EntryType.Event)
+{
+    <EventEntry championships="@championships" locations="@locations" onSubmitAction="@LoadData"/>
+}
+@if (currentEntryType == EntryType.Race)
+{
+    <RaceEntry events="@events" onSubmitAction="@LoadData"/>
+}
+@if (currentEntryType == EntryType.Result)
+{
+    <ResultEntry races="@races" teams="@teams" competitors="@competitors" onSubmitAction="@LoadData"/>
+}
 
 @code {
+
+    private enum EntryType
+    {
+        Competitor,
+        Team,
+        Event,
+        Race,
+        Result,
+        None
+    }
+
+    private EntryType currentEntryType = EntryType.None;
+    
     List<Data.ResultModels.Team> teams { get; set; }
     List<Data.ResultModels.Competitor> competitors { get; set; }
     List<Data.ResultModels.Race> races { get; set; }
     List<Data.ResultModels.Event> events { get; set; }
+    List<Data.ResultModels.Championship> championships { get; set; }
+    List<Data.ResultModels.Location> locations { get; set; }
 
     protected override void OnInitialized()
     {
@@ -35,6 +68,8 @@ This page is for entering data into the database.
         competitors = PersistService.Competitors;
         races = PersistService.Races;
         events = PersistService.Events;
+        championships = PersistService.Championships;
+        locations = PersistService.Locations;
         StateHasChanged();
     }
 }

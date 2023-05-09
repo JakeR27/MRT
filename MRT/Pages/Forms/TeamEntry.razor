@@ -2,11 +2,14 @@
 @using MRT.Data
 
 <h3>New Team</h3>
-<EditForm Model="@teamEntry" OnSubmit="@HandleTeamSubmit">
-    <label for="name">Team Name</label>
-    <InputText id="name" @bind-Value="teamEntry.Name"/>
-    <button type="submit">Add</button>
-</EditForm>
+<div class="form-group col-xl-6">
+    <EditForm Model="@teamEntry" OnSubmit="@HandleTeamSubmit">
+        <label class="form-text" for="name">Team Name</label>
+        <InputText class="form-control" id="name" @bind-Value="teamEntry.Name"/>
+        <br/>
+        <button class="btn btn-primary" type="submit">Add</button>
+    </EditForm>
+</div>
 
 @code {
     [Parameter]

@@ -1,0 +1,36 @@
+﻿@using MRT.Data.ResultModels
+@using MRT.Pages.Links
+<table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Organiser</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var championship in championships)
+            {
+                <tr>
+                    <td><ChampionshipLink Championship="@championship"/></td>
+                    <td>@championship.StartDate.ToShortDateString()</td>
+                    <td>@championship.EndDate.ToShortDateString()</td>
+                    @if (championship.ChampionshipOrganiser == null)
+                    {
+                        <td>Unknown</td>
+                    }
+                    else
+                    {
+                        <td>@championship.ChampionshipOrganiser.Name</td>
+                    }
+                    <td><a href="championship?championshipId=@championship.Id">STANDINGS</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+@code {
+    [Parameter]
+    public Championship[] championships { get; set; }
+}

@@ -1,6 +1,8 @@
 ﻿@page "/events"
 @using MRT.Data
 @using MRT.Data.ResultModels
+@using MRT.Pages.Links
+@using MRT.Pages.Tables
 @using Microsoft.AspNetCore.WebUtilities
 @inject ResultsService ResultsService
 @inject NavigationManager NavigationManager
@@ -14,16 +16,15 @@
 @if (championship != null || location != null)
 {
     <p>Filtering events by:</p>
-    <ul>
-        @if (championship != null)
-        {
-            <li>Championship: @championship.Name</li>
-        }
-        @if (location != null)
-        {
-            <li>Location: @location.Name</li>
-        }
-    </ul>
+    @if (championship != null)
+    {
+        <ChampionshipTable championships="@(new[] {championship})"/>
+        <br/>
+    }
+    @if (location != null)
+    {
+        <LocationTable locations="@(new[] {location})"/>
+    }
 }
 
 @if (events == null)
@@ -32,45 +33,17 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Location</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Championship</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var ev in events)
-            {
-                <tr>
-                    <td>@ev.Name</td>
-                    <td><LocationLink Location="@ev.Location"></LocationLink></td>
-                    <td>@ev.StartDate.ToShortDateString()</td>
-                    <td>@ev.EndDate.ToShortDateString()</td>
-                    @if (championship == null)
-                    {
-                        <td><ChampionshipLink Championship="@ev.Championship"/></td>
-                    }
-                    else
-                    {
-                        <td>@ev.Championship.Name</td>
-                    }
-                    <td><a href="event?eventId=@ev.Id">OVERVIEW</a></td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <EventTable events="events"/>
 }
+
 
 @code {
     [Parameter]
     public Guid ChampionshipId { get; set; }
     public Guid LocationId { get; set; }
 
+    [Inject]
+    public IJSRuntime JsRuntime { get; set; }
     
     private Event[]? events;
     private Championship? championship;
@@ -94,7 +67,6 @@ else
         championship = await ResultsService.GetChampionshipAsync(ChampionshipId);
         location = await ResultsService.GetLocationAsync(LocationId);
         events = await ResultsService.GetEventsAsync(championship, location);
-        
     }
 
     protected override async Task OnParametersSetAsync()

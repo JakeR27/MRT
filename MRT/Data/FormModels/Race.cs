@@ -6,6 +6,7 @@ public class Race
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public string Name { get; set; }
+    public string Description { get; set; }
 
     public ResultModels.Race ToRecord()
     {
@@ -15,7 +16,8 @@ public class Race
             Event = PersistService.GetEventById(EventId),
             StartDate = StartDate,
             EndDate = EndDate,
-            Name = Name
+            Name = Name,
+            Description = Description
         };
     }
 }

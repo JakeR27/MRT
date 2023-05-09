@@ -174,6 +174,16 @@ public class ResultsService
     {
         return Task.FromResult(_results.Where(result => result.Race.Event.Id == ev.Id).ToArray());
     }
+
+    public Task<Result[]> GetResultsAsync(Race? race)
+    {
+        if (race == null || race.Id == Guid.Empty)
+        {
+            return Task.FromResult(_results);
+        }
+        
+        return Task.FromResult(_results.Where(result => result.Race.Id == race.Id).ToArray());
+    }
     
     public Task<Competitor?> GetCompetitorAsync(Guid id)
     {
@@ -191,4 +201,20 @@ public class ResultsService
     {
         return Task.FromResult(_races);
     }
+
+    public Task<Race[]> GetRacesAsync(Event? ev)
+    {
+        if (ev == null || ev.Id == Guid.Empty)
+        {
+            return GetRacesAsync();
+        }
+        
+        return Task.FromResult(_races.Where(race => race.EventId == ev.Id).ToArray());
+    }
+    
+    public Task<Race?> GetRaceAsync(Guid id)
+    {
+        return Task.FromResult(_races.FirstOrDefault(race => race.Id == id));
+    }
+    
 }

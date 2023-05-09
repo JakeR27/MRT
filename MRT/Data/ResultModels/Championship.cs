@@ -18,5 +18,8 @@ namespace MRT.Data.ResultModels
             init => ChampionshipOrganiserId = value?.Id;
         }
 
+        [BsonIgnore]
+        public string Year => $"{StartDate.Year}/{EndDate.Year}";
+
     }
 }

@@ -2,12 +2,15 @@
 @using MRT.Data
 
 <h3>New Competitor</h3>
-<EditForm Model="@competitorEntry" OnSubmit="@HandleCompetitorSubmit">
-    <label for="name">Competitor Name</label>
-    <InputText id="name" @bind-Value="competitorEntry.Name"/>
-    <br/>
-    <button type="submit">Add</button>
-</EditForm>
+<div class="form-group col-xl-6">
+    <EditForm Model="@competitorEntry" OnSubmit="@HandleCompetitorSubmit">
+        <label class="form-text" for="name">Competitor Name</label>
+        <InputText class="form-control" id="name" @bind-Value="competitorEntry.Name"/>
+        <br/>
+        <button class="btn btn-primary" type="submit">Add</button>
+    </EditForm>
+</div>
+
 
 @code {
     [Parameter]

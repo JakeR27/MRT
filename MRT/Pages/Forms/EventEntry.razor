@@ -1,0 +1,65 @@
+﻿@using MRT.Data.FormModels
+@using MRT.Data
+
+<h3>New Event</h3>
+<div class="form-group col-xl-6">
+    <EditForm Model="@entry" OnSubmit="@HandleSubmit">
+        <label class="form-text" for="name">Name</label>
+        <InputText class="form-control" id="name" @bind-Value="entry.Name"/>
+    
+        <br/>
+        <label class="form-text" for="start-date">Start Date</label>
+        <InputDate Type="InputDateType.DateTimeLocal" class="form-control" id="start-date" @bind-Value="entry.StartDate"/>
+
+        <br/>
+        <label class="form-text" for="end-date">End Date</label>
+        <InputDate Type="InputDateType.DateTimeLocal" class="form-control" id="end-date" @bind-Value="entry.EndDate"/>
+    
+        <br/>
+        <label class="form-text" for="championship-id">Championship</label>
+        <InputSelect class="form-select" id="championship-id" @bind-Value="entry.ChampionshipId">
+            @foreach( var championship in championships)
+            {
+                <option value="@championship.Id">@championship.Name (@championship.Year)</option>
+            }
+        </InputSelect>
+        
+        <br/>
+        <label class="form-text" for="location-id">Location</label>
+        <InputSelect class="form-select" id="location-id" @bind-Value="entry.LocationId">
+            @foreach( var location in locations)
+            {
+                <option value="@location.Id">@location.Name</option>
+            }
+        </InputSelect>
+    
+        <br/>
+        <button class="btn btn-primary" type="submit">Add</button>
+        <button class="btn btn-primary" type="submit">Add Another</button>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback onSubmitAction { get; set; }
+    
+    [Parameter]
+    public List<Data.ResultModels.Championship> championships { get; set; }
+    [Parameter]
+    public List<Data.ResultModels.Location> locations { get; set; }
+    
+    Event entry = new();
+
+    private async void HandleSubmit()
+    {
+        var record = entry.ToRecord();
+        entry.Name = "";
+        entry.LocationId = Guid.Empty;
+        entry.ChampionshipId = Guid.Empty;
+        entry.StartDate = DateTime.MinValue;
+        entry.EndDate = DateTime.MinValue;
+        PersistService.AddEvent(record);
+
+        await onSubmitAction.InvokeAsync();
+    }
+}

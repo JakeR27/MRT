@@ -1,0 +1,15 @@
+﻿@if (condition)
+{
+    <span class="oi oi-lock-locked" aria-hidden="true"></span>
+}
+else
+{
+    <span class="oi oi-lock-unlocked" aria-hidden="true"></span>
+}
+
+@code {
+
+    [Parameter]
+    public bool condition { get; set; }
+
+}

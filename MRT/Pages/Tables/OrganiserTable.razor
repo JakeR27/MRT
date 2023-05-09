@@ -1,0 +1,25 @@
+﻿@using MRT.Data.ResultModels
+<table class="table">
+    <thead>
+    <tr>
+        <th>Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var organiser in organisers)
+    {
+        <tr>
+            <td>
+                <a href="championships?organiserId=@organiser.Id">@organiser.Name</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+
+    [Parameter]
+    public Organiser[] organisers { get; set; }
+
+}

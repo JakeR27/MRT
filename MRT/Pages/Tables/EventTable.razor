@@ -1,0 +1,30 @@
+﻿@using MRT.Data.ResultModels
+@using MRT.Pages.Links
+
+<table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Championship</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ev in events)
+            {
+                <tr>
+                    <td><EventLink ev="@ev"/></td>
+                    <td><LocationLink Location="@ev.Location"></LocationLink></td>
+                    <td>@ev.StartDate.ToShortDateString()</td>
+                    <td>@ev.EndDate.ToShortDateString()</td>
+                    <td><ChampionshipLink Championship="@ev.Championship"/></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+@code {
+    [Parameter]
+    public Event[] events { get; set; }
+}

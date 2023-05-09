@@ -1,6 +1,8 @@
 ﻿@page "/championships"
 @using MRT.Data
 @using MRT.Data.ResultModels
+@using MRT.Pages.Links
+@using MRT.Pages.Tables
 @using Microsoft.AspNetCore.WebUtilities
 @inject ResultsService ResultsService
 @inject NavigationManager NavigationManager
@@ -13,7 +15,8 @@
 
 @if (organiser != null)
 {
-    <h2>The following championships are organised by @organiser.Name</h2>
+    <p>Filtering championships by:</p>
+    <OrganiserTable organisers="@(new [] {organiser})" />
 }
 
 @if (championships == null)
@@ -22,39 +25,7 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Organiser</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var championship in championships)
-            {
-                <tr>
-                    @* <td>@championship.Id</td> *@
-                    <td>@championship.Name</td>
-                    <td>@championship.StartDate.ToShortDateString()</td>
-                    <td>@championship.EndDate.ToShortDateString()</td>
-                    @if (championship.ChampionshipOrganiser == null)
-                    {
-                        <td>Unknown</td>
-                    }
-                    else
-                    {
-                        <td>@championship.ChampionshipOrganiser.Name</td>
-                    }
-                    <td><a href="events?championshipId=@championship.Id">VIEW EVENTS</a></td>
-                    <td><a href="championship?championshipId=@championship.Id">OVERVIEW</a></td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <ChampionshipTable championships="championships" />
 }
 
 @code {

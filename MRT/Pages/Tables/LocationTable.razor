@@ -1,0 +1,26 @@
+﻿@using MRT.Data.ResultModels
+@using MRT.Pages.Links
+
+<table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var location in locations)
+        {
+            <tr>
+                <td><LocationLink Location="location"/></td>
+                <td>@location.Address</td>
+                <td>@location.Description</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+@code {
+    [Parameter] 
+    public Location[] locations { get; set; }
+}

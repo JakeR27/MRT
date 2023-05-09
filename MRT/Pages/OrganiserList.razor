@@ -1,6 +1,7 @@
 ﻿@page "/organisers"
 @using MRT.Data
 @using MRT.Data.ResultModels
+@using MRT.Pages.Tables
 @inject ResultsService ResultsService
 
 <PageTitle>Organisers</PageTitle>
@@ -15,25 +16,7 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Organiser</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var organiser in organisers)
-        {
-            <tr>
-                <td>
-                    <a href="championships?organiserId=@organiser.Id">@organiser.Name</a>
-                    
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+    <OrganiserTable organisers="@organisers" />
 }
 
 @code {

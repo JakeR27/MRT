@@ -2,54 +2,99 @@
 @using MRT.Data
 
 <h3>New Result</h3>
-<EditForm Model="@entry" OnSubmit="@HandleSubmit">
-    <label for="start-position">Start Position</label>
-    <InputNumber id="start-position" @bind-Value="entry.StartPosition"/>
-    
-    <br/>
-    <label for="finish-track">Finish Position (On Track)</label>
-    <InputNumber id="finish-track" @bind-Value="entry.FinishOnTrackPosition"/>
-    
-    <br/>
-    <label for="finish-result">Finish Position (After Penalties)</label>
-    <InputNumber id="finish-result" @bind-Value="entry.FinishOnResultPosition"/>
-    
-    <br/>
-    <label for="race-id">Race</label>
-    <InputSelect id="race-id" @bind-Value="entry.RaceId">
-        @foreach( var race in races)
+<div class="form-group col-xl-6">
+    <label class="form-text" for="race-id">Race</label>
+    <InputSelect class="form-select" id="race-id" @bind-Value="entry.RaceId">
+        @foreach (var race in races)
         {
             <option value="@race.Id">@race.Name - @race.Event.Name (@race.Event.Championship.Name)</option>
         }
     </InputSelect>
-    
-    <br/>
-    <label for="competitor-id">Competitor</label>
-    <InputSelect id="competitor-id" @bind-Value="entry.CompetitorId">
-        @foreach( var competitor in competitors)
+    <table>
+        <thead>
+        <tr>
+            <th>Team</th>
+            <th>Competitor</th>
+            <th>Start Position</th>
+            <th>Finish Position (on track)</th>
+            <th>Finish Position (after penalties)</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var tableResult in tableResults)
         {
-            <option value="@competitor.Id">@competitor.Name</option>
+            <tr>
+                <td>
+                    <InputSelect class="form-select" id="team-id" @bind-Value="tableResult.TeamId">
+                        @foreach (var team in teams)
+                        {
+                            <option value="@team.Id">@team.Name</option>
+                        }
+                    </InputSelect>
+                </td>
+                <td>
+                    <InputSelect class="form-select" id="competitor-id" @bind-Value="tableResult.CompetitorId">
+                        @foreach (var competitor in competitors)
+                        {
+                            <option value="@competitor.Id">@competitor.Name</option>
+                        }
+                    </InputSelect>
+                </td>
+                <td><InputNumber inputmode="numeric" pattern="[0-9]*" class="form-control" id="start-position" @bind-Value="tableResult.StartPosition"/></td>
+                <td><InputNumber inputmode="numeric" pattern="[0-9]*" class="form-control" id="finish-track" @bind-Value="tableResult.FinishOnTrackPosition"/></td>
+                <td><InputNumber inputmode="numeric" pattern="[0-9]*" class="form-control" id="finish-result" @bind-Value="tableResult.FinishOnResultPosition"/></td>
+            </tr>
         }
-    </InputSelect>
-    
+        </tbody>
+    </table>
     <br/>
-    <label for="team-id">Team</label>
-    <InputSelect id="team-id" @bind-Value="entry.TeamId">
-        @foreach( var team in teams)
-        {
-            <option value="@team.Id">@team.Name</option>
-        }
-    </InputSelect>
-    
-    <br/>
-    <button type="submit">Add</button>
-</EditForm>
+    <EditForm Model="@entry" OnSubmit="@HandleSubmit">
+    @*     <label class="form-text" for="start-position">Start Position</label> *@
+    @*     <InputNumber inputmode="numeric" pattern="[0-9]*" class="form-control" id="start-position" @bind-Value="entry.StartPosition"/> *@
+    @* *@
+    @*     <br/> *@
+    @*     <label class="form-text" for="finish-track">Finish Position (On Track)</label> *@
+    @*     <InputNumber inputmode="numeric" pattern="[0-9]*" class="form-control" id="finish-track" @bind-Value="entry.FinishOnTrackPosition"/> *@
+    @* *@
+    @*     <br/> *@
+    @*     <label class="form-text" for="finish-result">Finish Position (After Penalties)</label> *@
+    @*     <InputNumber inputmode="numeric" pattern="[0-9]*" class="form-control" id="finish-result" @bind-Value="entry.FinishOnResultPosition"/> *@
+    @* *@
+    @*     <br/> *@
+    @* *@
+    @* *@
+    @*     <br/> *@
+    @*     <label class="form-text" for="competitor-id">Competitor</label> *@
+    @*     <InputSelect class="form-select" id="competitor-id" @bind-Value="entry.CompetitorId"> *@
+    @*         @foreach (var competitor in competitors) *@
+    @*         { *@
+    @*             <option value="@competitor.Id">@competitor.Name</option> *@
+    @*         } *@
+    @*     </InputSelect> *@
+    @* *@
+    @*     <br/> *@
+    @*     <label class="form-text" for="team-id">Team</label> *@
+    @*     <InputSelect class="form-select" id="team-id" @bind-Value="entry.TeamId"> *@
+    @*         @foreach (var team in teams) *@
+    @*         { *@
+    @*             <option value="@team.Id">@team.Name</option> *@
+    @*         } *@
+    @*     </InputSelect> *@
+    @* *@
+    @*     <br/> *@
+    <button class="btn btn-secondary" type="button" @onclick="AddRow">Add Row</button>
+    <button class="btn btn-secondary" type="button" @onclick="RemoveRow">Remove Row</button>
+    <button class="btn btn-primary" type="submit">Submit Result(s)</button>
+    </EditForm>
+</div>
 
 @code {
     [Parameter]
     public EventCallback onSubmitAction { get; set; }
     
     Result entry = new();
+    
+    List<Result> tableResults = new() {new ()};
 
     [Parameter]
     public List<Data.ResultModels.Team> teams { get; set; }
@@ -58,16 +103,34 @@
     [Parameter]
     public List<Data.ResultModels.Race> races { get; set; }
 
+    private void AddRow()
+    {
+        tableResults.Add(new Result());
+    }
+    
+    private void RemoveRow()
+    {
+        tableResults.RemoveAt(tableResults.Count - 1);
+    }
+    
     private async void HandleSubmit()
     {
-        var record = entry.ToRecord();
-        entry.StartPosition = 0;
-        entry.FinishOnTrackPosition = 0;
-        entry.FinishOnResultPosition = 0;
-        entry.RaceId = Guid.Empty;
-        entry.CompetitorId = Guid.Empty;
-        entry.TeamId = Guid.Empty;
-        PersistService.AddResult(record);
+        // var record = entry.ToRecord();
+        // entry.StartPosition = 0;
+        // entry.FinishOnTrackPosition = 0;
+        // entry.FinishOnResultPosition = 0;
+        // entry.RaceId = Guid.Empty;
+        // entry.CompetitorId = Guid.Empty;
+        // entry.TeamId = Guid.Empty;
+
+        foreach (var tableResult in tableResults)
+        {
+            tableResult.RaceId = entry.RaceId;
+            PersistService.AddResult(tableResult.ToRecord());
+        }
+        tableResults.Clear();
+
+    //PersistService.AddResult(record);
         
         await onSubmitAction.InvokeAsync();
         

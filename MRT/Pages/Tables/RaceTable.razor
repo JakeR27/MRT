@@ -1,0 +1,32 @@
+﻿@using MRT.Data.ResultModels
+@using MRT.Pages.Links
+
+<table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Description</th>
+                <th>Event</th>
+                <th>Championship</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var race in races)
+            {
+                <tr>
+                    <td><RaceLink race="@race"/></td>
+                    <td>@race.StartDate.ToUniversalTime()</td>
+                    <td>@race.EndDate.ToUniversalTime()</td>
+                    <td>@race.Description</td>
+                    <td><EventLink ev="@race.Event"/></td>
+                    <td><ChampionshipLink Championship="@race.Event.Championship"/></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+@code {
+    [Parameter]
+    public Race[] races { get; set; }
+}

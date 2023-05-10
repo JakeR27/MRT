@@ -47,7 +47,7 @@ else
         }
         
         organiser = await ResultsService.GetOrganiserAsync(OrganiserId);
-        championships = await ResultsService.GetChampionshipsAsync(organiser);
+        championships = (await ResultsService.GetChampionshipsAsync(organiser)).OrderBy(c=>c.StartDate).ThenBy(c=>c.Name).ToArray();
     }
     
     protected override async Task OnParametersSetAsync()

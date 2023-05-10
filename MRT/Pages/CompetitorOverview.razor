@@ -2,6 +2,7 @@
 @using MRT.Data
 @using MRT.Data.ResultModels
 @using MRT.Pages.Links
+@using MRT.Pages.Tables
 @using Microsoft.AspNetCore.WebUtilities
 @using Microsoft.AspNetCore.Server.Kestrel.Core
 @inject ResultsService ResultsService
@@ -43,35 +44,7 @@ else
         </tbody>
     </table>
     <h3>Results</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Start Position</th>
-                <th>Finish Position (After Penalties)</th>
-                <th>Positions Gained/Lost</th>
-                <th>Position Penalties Received</th>
-                <th>Race</th>
-                <th>Event</th>
-                <th>Championship</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var result in results)
-            {
-                <tr>
-                    <td>@result.Competitor?.Name</td>
-                    <td>@result.StartPosition</td>
-                    <td>@result.FinishOnTrackPosition (@result.FinishOnResultPosition)</td>
-                    <td>@(result.StartPosition - result.FinishOnResultPosition)</td>
-                    <td>@result.PenaltiesReceived?.Sum(penalty => penalty.PositionPenalty)</td>
-                    <td>@result.Race.Name</td>
-                    <td><EventLink ev="@result.Race.Event"/></td>
-                    <td><ChampionshipLink Championship="@result.Race.Event.Championship"/></td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <ResultTable results="results"/>
 }
 
 @code {

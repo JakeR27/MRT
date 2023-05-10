@@ -1,0 +1,34 @@
+﻿@using MRT.Data.FormModels
+@using MRT.Data
+
+<h3>New Location</h3>
+<div class="form-group col-xl-6">
+    <EditForm Model="@entry" OnSubmit="@HandleTeamSubmit">
+        <label class="form-text" for="name">Location Name</label>
+        <InputText class="form-control" id="name" @bind-Value="entry.Name"/>
+        <br/>
+        <label class="form-text" for="description">Description</label>
+        <InputText class="form-control" id="description" @bind-Value="entry.Description"/>
+        <br/>
+        <label class="form-text" for="name">Address</label>
+        <InputText class="form-control" id="name" @bind-Value="entry.Address"/>
+        <button class="btn btn-primary" type="submit">Add</button>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback onSubmitAction { get; set; }
+    
+    Location entry = new();
+
+
+    private async void HandleTeamSubmit()
+    {
+        var record = entry.ToRecord();
+        entry.Name = "";
+        PersistService.AddLocation(record);
+        
+        await onSubmitAction.InvokeAsync();
+    }
+}

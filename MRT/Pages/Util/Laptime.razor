@@ -1,0 +1,26 @@
+﻿@if (laptime != null)
+{
+    @if (laptime.Value.Hour > 0)
+    {
+        @($"{laptime.Value.Hour}:{laptime.Value.Minute}:{laptime.Value.Second}.{laptime.Value.Millisecond}")
+    }
+    else
+    {
+        @if (laptime.Value.Minute > 0)
+        {
+            @($"{laptime.Value.Minute}:{laptime.Value.Second}.{laptime.Value.Millisecond}")
+        }
+        else
+        {
+            @($"{laptime.Value.Second}.{laptime.Value.Millisecond}")
+        }
+    }
+}
+else
+{
+    @("-")
+}
+@code {
+    [Parameter]
+    public DateTime? laptime { get; set; }
+}

@@ -45,7 +45,7 @@ else
         }
 
         race = await ResultsService.GetRaceAsync(RaceId);
-        results = await ResultsService.GetResultsAsync(race);
+        results = (await ResultsService.GetResultsAsync(race)).OrderBy(result=>result.FinishOnResultPosition).ThenBy(result=>result.LapTime).ToArray();
     }
 
     protected override async Task OnParametersSetAsync()

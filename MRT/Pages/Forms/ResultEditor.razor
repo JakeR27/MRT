@@ -1,8 +1,9 @@
 ﻿@using MRT.Data.FormModels
 @using MRT.Data
 @inject ResultsService ResultsService
+@inject IJSRuntime JS
 
-<h3>New Result</h3>
+<h3>Edit Result</h3>
 <div class="form-group col-xl-8">
     <label class="form-text" for="race-id">Race</label>
     
@@ -67,11 +68,9 @@
             </tr>
         </thead>
         <tbody>
-        @foreach (var tableResult in tableResults)
-        {
             <tr>
                 <td>
-                    <InputSelect class="form-select" id="team-id" @bind-Value="tableResult.TeamId">
+                    <InputSelect class="form-select" id="team-id" @bind-Value="formResult.TeamId">
                         @foreach (var team in teams)
                         {
                             <option value="@team.Id">@team.Name</option>
@@ -79,25 +78,22 @@
                     </InputSelect>
                 </td>
                 <td>
-                    <InputSelect class="form-select" id="competitor-id" @bind-Value="tableResult.CompetitorId">
+                    <InputSelect class="form-select" id="competitor-id" @bind-Value="formResult.CompetitorId">
                         @foreach (var competitor in competitors)
                         {
                             <option value="@competitor.Id">@competitor.Name</option>
                         }
                     </InputSelect>
                 </td>
-                <td><InputNumber inputmode="numeric" pattern="[0-9]*" class="form-control" id="start-position" @bind-Value="tableResult.StartPosition"/></td>
-                <td><InputNumber inputmode="numeric" pattern="[0-9]*" class="form-control" id="finish-track" @bind-Value="tableResult.FinishOnTrackPosition"/></td>
-                <td><InputNumber inputmode="numeric" pattern="[0-9]*" class="form-control" id="finish-result" @bind-Value="tableResult.FinishOnResultPosition"/></td>
-                <td><InputDate class="form-control" Type="InputDateType.Time" step="0.001" max=00:05:00.000 @bind-Value="tableResult.LapTime"/></td>
+                <td><InputNumber inputmode="numeric" pattern="[0-9]*" class="form-control" id="start-position" @bind-Value="formResult.StartPosition"/></td>
+                <td><InputNumber inputmode="numeric" pattern="[0-9]*" class="form-control" id="finish-track" @bind-Value="formResult.FinishOnTrackPosition"/></td>
+                <td><InputNumber inputmode="numeric" pattern="[0-9]*" class="form-control" id="finish-result" @bind-Value="formResult.FinishOnResultPosition"/></td>
+                <td><InputDate id="laptime" class="form-control" Type="InputDateType.Time" step="0.001" max=00:05:00.000 @bind-Value="formResult.LapTime"/></td>
             </tr>
-        }
         </tbody>
     </table>
     <br/>
-    <EditForm Model="@entry" OnSubmit="@HandleSubmit">
-        <button class="btn btn-secondary" type="button" @onclick="AddRow">Add Row</button>
-        <button class="btn btn-secondary" type="button" @onclick="RemoveRow">Remove Row</button>
+    <EditForm Model="@formResult" OnSubmit="@HandleSubmit">
         <button class="btn btn-primary" type="submit">Submit Result(s)</button>
     </EditForm>
 </div>
@@ -106,16 +102,17 @@
     [Parameter]
     public EventCallback onSubmitAction { get; set; }
     
-    Result entry = new();
-    DateTime test = new DateTime();
-
-    List<Result> tableResults = new() {new ()};
 
     [Parameter]
     public List<Data.ResultModels.Team> teams { get; set; }
     [Parameter]
     public List<Data.ResultModels.Competitor> competitors { get; set; }
 
+    [Parameter]
+    public Data.ResultModels.Result inputResult { get; set; }
+
+    public Data.FormModels.Result formResult { get; set; } = new();
+    
     public List<Data.ResultModels.Race> races { get; set; } = new();
     public List<Data.ResultModels.Event> events { get; set; } = new();
     [Parameter]
@@ -124,15 +121,29 @@
     private Guid selectedChampionship;
     private Guid selectedEvent;
     private Guid selectedRace;
-
-    private void AddRow()
-    {
-        tableResults.Add(new Result());
-    }
     
-    private void RemoveRow()
+    protected override async Task OnInitializedAsync()
     {
-        tableResults.RemoveAt(tableResults.Count - 1);
+        formResult.CompetitorId = inputResult.CompetitorId;
+        formResult.TeamId = inputResult.TeamId;
+        formResult.LapTime = inputResult.LapTime.GetValueOrDefault();
+        formResult.RaceId = inputResult.RaceId;
+        formResult.StartPosition = inputResult.StartPosition;
+        formResult.FinishOnResultPosition = inputResult.FinishOnResultPosition;
+        formResult.FinishOnTrackPosition = inputResult.FinishOnTrackPosition;
+
+        selectedChampionship = inputResult.Race.Event.ChampionshipId;
+        ChampionshipSelectionChanged();
+        selectedEvent = inputResult.Race.EventId;
+        EventSelectionChanged();
+        selectedRace = inputResult.RaceId;
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        //return base.OnAfterRenderAsync(firstRender);
+        JS.InvokeVoidAsync("setTimeInput", "#laptime", formResult.LapTime.ToString("HH\\:mm\\:ss\\.fff"));
+        return Task.Delay(0);
     }
 
     private async void ChampionshipSelectionChanged()
@@ -154,28 +165,15 @@
     
     private async void HandleSubmit()
     {
-        // var record = entry.ToRecord();
-        // entry.StartPosition = 0;
-        // entry.FinishOnTrackPosition = 0;
-        // entry.FinishOnResultPosition = 0;
-        // entry.RaceId = Guid.Empty;
-        // entry.CompetitorId = Guid.Empty;
-        // entry.TeamId = Guid.Empty;
-
         if (selectedRace == Guid.Empty)
         {
             return;
         }
         
-        foreach (var tableResult in tableResults)
-        {
-            tableResult.RaceId = selectedRace;
-            PersistService.AddResult(tableResult.ToRecord());
-        }
-        tableResults.Clear();
+        formResult.RaceId = selectedRace;
+        PersistService.UpdateResult(formResult.ToRecord(inputResult.Id));
 
-    //PersistService.AddResult(record);
-        
+
         await onSubmitAction.InvokeAsync();
         
     }

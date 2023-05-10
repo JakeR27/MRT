@@ -1,0 +1,140 @@
+﻿@using MRT.Data.FormModels
+@using MRT.Data
+@inject ResultsService ResultsService
+
+<h3>New Result</h3>
+<div class="form-group col-xl-8">
+    <label class="form-text" for="race-id">Race</label>
+    
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Championship</th>
+            <th></th>
+            <th>Event</th>
+            <th>Race</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <InputSelect class="form-select" id="championship-id" @bind-Value="selectedChampionship">
+                    <option value="@Guid.Empty" disabled hidden>CHAMPIONSHIP</option>
+                    @foreach (var championship in championships)
+                    {
+                        <option value="@championship.Id">@championship.Name - @championship.ChampionshipOrganiser?.Name (@championship.Year)</option>
+                    }
+                </InputSelect>
+            </td>
+            <td>
+                <button class="btn btn-secondary" type="button" @onclick="@LoadEventAndRace"><span class="oi oi-arrow-right"></span></button>
+            </td>
+            <td>
+                @ev.Name (@ev.Location?.Name)
+            </td>
+            <td>
+                @race.Name;
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <br/>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>Competitor</th>
+                <th>Laptime</th>
+                <th>Competitor Password</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var tableResult in tableResults)
+        {
+            <tr>
+                <td>
+                    @team.Name
+                </td>
+                <td>
+                    <InputSelect class="form-select" id="competitor-id" @bind-Value="tableResult.CompetitorId">
+                        @foreach (var competitor in competitors)
+                        {
+                            <option value="@competitor.Id">@competitor.Name</option>
+                        }
+                    </InputSelect>
+                </td>
+                <td><InputDate class="form-control" Type="InputDateType.Time" step="0.001" max=00:05:00.000 @bind-Value="tableResult.LapTime"/></td>
+                <td><InputText class="form-control" id="finish-track" @bind-Value="@competitorPassword"/></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <br/>
+    <EditForm Model="@entry" OnSubmit="@HandleSubmit">
+        <button class="btn btn-primary" type="submit">Submit Result(s)</button>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback onSubmitAction { get; set; }
+    
+    Result entry = new();
+    
+    List<Result> tableResults = new() {new ()};
+
+    [Parameter]
+    public Data.ResultModels.Team team { get; set; }
+    [Parameter]
+    public List<Data.ResultModels.Competitor> competitors { get; set; }
+
+    public Data.ResultModels.Race race { get; set; } = new() {Name = "RACE"};
+    public Data.ResultModels.Event ev { get; set; } = new() {Name="EVENT"};
+    [Parameter]
+    public List<Data.ResultModels.Championship> championships { get; set; }
+    
+    private Guid selectedChampionship = Guid.Empty;
+
+    private string competitorPassword;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEventAndRace();
+    }
+
+    private async Task LoadEventAndRace()
+    {
+        if (selectedChampionship == Guid.Empty)
+        {
+            return;
+        }
+        var championship = await ResultsService.GetChampionshipAsync(selectedChampionship);
+        ev = (await ResultsService.GetEventsAsync(championship)).OrderBy(e => e.StartDate).First();
+        race = (await ResultsService.GetRacesAsync(ev)).OrderBy(r=>r.StartDate).First();
+    }
+
+    private async void HandleSubmit()
+    {
+        if (selectedChampionship == Guid.Empty)
+        {
+            return;
+        }
+        
+        foreach (var tableResult in tableResults)
+        {
+            if (competitorPassword != tableResult.CompetitorId.ToString()[..4]) return;
+            tableResult.StartPosition = -1;
+            tableResult.FinishOnResultPosition = -1;
+            tableResult.FinishOnTrackPosition = -1;
+            tableResult.TeamId = team.Id;
+            tableResult.RaceId = race.Id;
+            PersistService.AddResult(tableResult.ToRecord());
+        }
+        tableResults.Clear();
+
+    //PersistService.AddResult(record);
+        
+        await onSubmitAction.InvokeAsync();
+        
+    }
+}

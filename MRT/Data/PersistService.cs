@@ -150,6 +150,15 @@ public class PersistService
             .FindOne(location => location.Id == locationId);
     }
 
+    public static bool UpdateResult(Result result)
+    {
+        if (result.Id == Guid.Empty) return false;
+        
+        LiteDb.Instance().Database.GetCollection<Result>("result").Update(result);
+        LoadResults();
+        return true;
+    } 
+
     public static void Load()
     {
         LoadOrganisers();
@@ -187,21 +196,22 @@ public class PersistService
     public static void LoadEvents()
     {
         _events.AddRange(
-            LiteDb.Instance().Database.GetCollection<Event>("event").FindAll()
+            LiteDb.Instance().Database.GetCollection<Event>("event").FindAll().OrderBy(ev => ev.StartDate)
             );
     }
     
     public static void LoadResults()
     {
+        _results.Clear();
         _results.AddRange(
             LiteDb.Instance().Database.GetCollection<Result>("result").FindAll()
-            );
+        );
     }
 
     public static void LoadRaces()
     {
         _races.AddRange(
-            LiteDb.Instance().Database.GetCollection<Race>("race").FindAll()
+            LiteDb.Instance().Database.GetCollection<Race>("race").FindAll().OrderBy(race => race.Name)
             );
     }
     

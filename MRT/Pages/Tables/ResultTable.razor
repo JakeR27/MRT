@@ -1,28 +1,35 @@
 ﻿@using MRT.Data.ResultModels
 @using MRT.Pages.Links
+@using MRT.Pages.Util
 
 <table class="table">
         <thead>
-            <tr>
-                <th>Name</th>
-                <th>Start Position</th>
-                <th>Finish Position (After Penalties)</th>
-                <th>Positions Gained/Lost</th>
-                <th>Position Penalties Received</th>
-                <th>Race</th>
-                <th>Event</th>
-                <th>Championship</th>
-            </tr>
+        <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Start Position</th>
+            <th>Finish Position (After Penalties)</th>
+            <th>Laptime</th>
+            <th>Positions Gained/Lost</th>
+            <th>Penalties Received</th>
+            <th>Team</th>
+            <th>Race</th>
+            <th>Event</th>
+            <th>Championship</th>
+        </tr>
         </thead>
         <tbody>
             @foreach (var result in results)
             {
                 <tr>
+                    <td><a href="dataedit?resultId=@result.Id"><Icon IconName="pencil"/></a></td>
                     <td>@result.Competitor?.Name</td>
-                    <td>@result.StartPosition</td>
-                    <td>@result.FinishOnTrackPosition (@result.FinishOnResultPosition)</td>
-                    <td>@(result.StartPosition - result.FinishOnResultPosition)</td>
+                    <td>@StartPositionText(result.StartPosition)</td>
+                    <td>@FinishPositionText(result.FinishOnResultPosition, result.FinishOnTrackPosition)</td>
+                    <td><Laptime laptime="@result.LapTime"/></td>
+                    <td>@PositionChangeText(result.StartPosition, result.FinishOnResultPosition)</td>
                     <td>@result.PenaltiesReceived?.Sum(penalty => penalty.PositionPenalty)</td>
+                    <td>@result.Team.Name</td>
                     <td>@result.Race.Name</td>
                     <td><EventLink ev="@result.Race.Event"/></td>
                     <td><ChampionshipLink Championship="@result.Race.Event.Championship"/></td>
@@ -33,4 +40,10 @@
 @code {
     [Parameter]
     public Result[] results { get; set; }
+    
+    private string IgnoreNegativeAndZero(int num) => num > 0 ? $"{num}" : "-";
+
+    private string StartPositionText(int pos) => IgnoreNegativeAndZero(pos);
+    private string PositionChangeText(int spos, int fpos) => spos > 0 ? $"{spos-fpos}" : "N/A";
+    private string FinishPositionText(int ppos, int tpos) => ppos == tpos ? $"{IgnoreNegativeAndZero(ppos)}" : $"{tpos} ({ppos})";
 }

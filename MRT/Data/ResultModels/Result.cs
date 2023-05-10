@@ -8,6 +8,7 @@ public record Result
     public int StartPosition { get; init; }
     public int FinishOnTrackPosition { get; init; }
     public int FinishOnResultPosition { get; init; }
+    public DateTime? LapTime { get; set; }
     public List<Penalty> PenaltiesReceived { get; init; }
     public Guid RaceId { get; init; }
     [BsonIgnore]

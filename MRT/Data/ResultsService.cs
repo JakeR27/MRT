@@ -185,6 +185,11 @@ public class ResultsService
         return Task.FromResult(_results.Where(result => result.Race.Id == race.Id).ToArray());
     }
     
+    public Task<Result?> GetResultAsync(Guid id)
+    {
+        return Task.FromResult(_results.FirstOrDefault(result => result.Id == id));
+    }
+    
     public Task<Competitor?> GetCompetitorAsync(Guid id)
     {
         return Task.FromResult(_competitors.FirstOrDefault(competitor => competitor.Id == id));
@@ -195,6 +200,11 @@ public class ResultsService
         var results = _results.Where(result => result.Competitor.Id == competitor.Id).ToList();
         var teams = results.Select(result => result.Team).Distinct().ToArray();
         return Task.FromResult(teams);
+    }
+
+    public Task<Team[]> GetTeamsAsync()
+    {
+        return Task.FromResult(_teams);
     }
 
     public Task<Race[]> GetRacesAsync()

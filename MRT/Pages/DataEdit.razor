@@ -1,0 +1,43 @@
+﻿@page "/dataedit"
+@using MRT.Data
+@using MRT.Data.ResultModels
+@using MRT.Pages.Forms
+@using Microsoft.AspNetCore.WebUtilities
+@inject ResultsService ResultsService
+@inject NavigationManager NavigationManager
+<h3>Edit Data</h3>
+<hr/>
+@if (ResultId != null && ResultRecord != null)
+{
+    <ResultEditor inputResult="@ResultRecord" teams="@teams" competitors="@competitors" championships="@championships" onSubmitAction="@OnSubmit"/>
+}
+
+@code {
+    Guid? ResultId;
+    Result? ResultRecord;
+
+    List<Team> teams;
+    List<Competitor> competitors;
+    List<Championship> championships;
+
+    protected override async Task OnInitializedAsync()
+    {
+        teams = (await ResultsService.GetTeamsAsync()).ToList();
+        competitors = (await ResultsService.GetCompetitorsAsync()).ToList();
+        championships = (await ResultsService.GetChampionshipsAsync()).ToList();
+        
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("resultId", out var _resultId))
+        {
+            ResultId = Guid.Parse(_resultId);
+            ResultRecord = await ResultsService.GetResultAsync(ResultId.Value);
+        }
+    }
+
+    protected async Task OnSubmit()
+    {
+        PersistService.LoadResults();
+        await OnInitializedAsync();
+        StateHasChanged();
+    }
+}

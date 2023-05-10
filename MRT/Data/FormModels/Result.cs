@@ -8,9 +8,14 @@ public class Result
     public Guid RaceId { get; set; }
     public Guid CompetitorId { get; set; }
     public Guid TeamId { get; set; }
+    public DateTime LapTime { get; set; }
     
     public ResultModels.Result ToRecord()
     {
+        if (FinishOnResultPosition == 0)
+        {
+            FinishOnResultPosition = FinishOnTrackPosition;
+        }
         return new ResultModels.Result()
         {
             Id = Guid.NewGuid(),
@@ -19,7 +24,26 @@ public class Result
             FinishOnResultPosition = FinishOnResultPosition,
             Race = PersistService.GetRaceById(RaceId),
             Competitor = PersistService.GetCompetitorById(CompetitorId),
-            Team = PersistService.GetTeamById(TeamId)
+            Team = PersistService.GetTeamById(TeamId),
+            LapTime = LapTime
+        };
+    }
+    public ResultModels.Result ToRecord(Guid id)
+    {
+        if (FinishOnResultPosition == 0)
+        {
+            FinishOnResultPosition = FinishOnTrackPosition;
+        }
+        return new ResultModels.Result()
+        {
+            Id = id,
+            StartPosition = StartPosition,
+            FinishOnTrackPosition = FinishOnTrackPosition,
+            FinishOnResultPosition = FinishOnResultPosition,
+            Race = PersistService.GetRaceById(RaceId),
+            Competitor = PersistService.GetCompetitorById(CompetitorId),
+            Team = PersistService.GetTeamById(TeamId),
+            LapTime = LapTime
         };
     }
 }

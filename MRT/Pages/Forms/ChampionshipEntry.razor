@@ -1,0 +1,81 @@
+﻿@using MRT.Data.FormModels
+@using MRT.Data
+@using MRT.Pages.Util
+@using Championship = MRT.Data.ResultModels.Championship
+
+<h3>New Championship</h3>
+<div class="form-group col-xl-6">
+<EditForm Model="@entry" OnSubmit="@HandleSubmit">
+    <label class="form-text" for="name">Name</label>
+    <InputText class="form-control" id="name" @bind-Value="entry.Name"/>
+    
+    <br/>
+    <label class="form-text" for="start-date">Start Date</label>
+    <div class="input-group">
+            <InputDate class="form-control" id="start-date" Type="InputDateType.DateTimeLocal" @bind-Value="entry.StartDate"/>
+            <button class="btn btn-secondary" type="button" @onclick="() => entry.StartDate = DateTime.UtcNow">Set Now</button>
+        </div>
+
+    <br/>
+    <label class="form-text" for="end-date">End Date</label>
+    <div class="input-group">
+        <InputDate class="form-control" id="end-date" Type="InputDateType.DateTimeLocal" @bind-Value="entry.EndDate"/>
+        <button class="btn btn-secondary" type="button" @onclick="() => entry.EndDate = entry.StartDate">Copy Start Date</button>
+    </div>
+
+    <br/>
+    <label class="form-text" for="organiser-id">Organiser</label>
+    <InputSelect class="form-control" id="organiser-id" @bind-Value="entry.ChampionshipOrganiserId">
+        @foreach (var organiser in organisers)
+        {
+            <option value="@organiser.Id">@organiser.Name</option>
+        }
+    </InputSelect>
+    <br/>
+
+    
+    <div class="row justify-content-center">
+            <div class="col-3">
+                <button class="btn btn-primary w-100" type="submit">Add</button>
+            </div>
+            <div class="col-1 form-switch">
+                <InputCheckbox class="form-check-input" id="event-lock"  @bind-Value="keepFieldsOnSubmit"></InputCheckbox>
+                <label class="form-check-label" for="event-lock">
+                    <LockIcon condition="@keepFieldsOnSubmit"/>
+                </label>
+            </div>
+        </div>
+
+    <br/>
+    
+</EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback onSubmitAction { get; set; }
+    
+    [Parameter]
+    public List<Data.ResultModels.Organiser> organisers { get; set; }
+    
+    Data.FormModels.Championship entry = new();
+
+    bool keepFieldsOnSubmit = false;
+    
+
+    private async void HandleSubmit()
+    {
+        var record = entry.ToRecord();
+        entry.Name = "";
+        if (!keepFieldsOnSubmit)
+        {
+            entry.ChampionshipOrganiserId = Guid.Empty;
+            entry.StartDate = DateTime.MinValue;
+            entry.EndDate = DateTime.MinValue;
+        }
+        
+        PersistService.AddChampionship(record);
+
+        await onSubmitAction.InvokeAsync();
+    }
+}

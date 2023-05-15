@@ -1,20 +1,23 @@
 ﻿@using MRT.Data.ResultModels
 @using MRT.Pages.Links
+@using MRT.Pages.Util
 
 <table class="table">
         <thead>
-            <tr>
-                <th>Name</th>
-                <th>Location</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Championship</th>
-            </tr>
+        <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Championship</th>
+        </tr>
         </thead>
         <tbody>
             @foreach (var ev in events)
             {
                 <tr>
+                    <td><a href="dataedit?eventId=@ev.Id"><Icon IconName="pencil"/></a></td>
                     <td><EventLink ev="@ev"/></td>
                     <td><LocationLink Location="@ev.Location"></LocationLink></td>
                     <td>@ev.StartDate.ToShortDateString()</td>

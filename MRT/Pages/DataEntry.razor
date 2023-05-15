@@ -17,7 +17,7 @@ This page is for entering data into the database.
 
 @if (currentEntryType == EntryType.Competitor)
 {
-    <CompetitorEntry onSubmitAction="@LoadData"/>
+    <CompetitorEntry competitors="@competitors" onSubmitAction="@LoadData"/>
 }
 @if (currentEntryType == EntryType.Team)
 {

@@ -12,7 +12,14 @@
         }
         else
         {
-            @($"{laptime.Value.Second}.{laptime.Value.Millisecond}")
+            @if (laptime.Value.Second == 0 && laptime.Value.Millisecond == 0)
+            {
+                @("-")
+            }
+            else
+            {
+                @($"{laptime.Value.Second}.{laptime.Value.Millisecond}")
+            }
         }
     }
 }

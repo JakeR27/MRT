@@ -1,0 +1,37 @@
+﻿@using MRT.Data.ResultModels
+@using MRT.Data
+@inject ResultsService ResultsService
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Competitor</th>
+        @foreach (var ev in championshipEvents)
+        {
+            <th>@ev.Name</th>
+        }
+    </tr>
+    </thead>
+</table>
+
+@code {
+    private List<Competitor> competitors { get; set; }
+    private List<Race> races { get; set; }
+    private List<Event> championshipEvents { get; set; }
+
+    [Parameter] 
+    public Championship championship { get; set; }
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+        championshipEvents = (await ResultsService.GetEventsAsync(championship)).ToList();
+        competitors = (await ResultsService.GetCompetitorsAsync()).ToList();
+        foreach (var ev in championshipEvents)
+        {
+            var allRaces = (await ResultsService.GetRacesAsync(ev)).ToList();
+        }
+        
+    }
+
+}

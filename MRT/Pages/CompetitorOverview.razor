@@ -71,7 +71,7 @@ else
         }
 
         competitor = await ResultsService.GetCompetitorAsync(CompetitorId);
-        results = await ResultsService.GetResultsAsync(competitor);
+        results = (await ResultsService.GetResultsAsync(competitor)).ToList().OrderByDescending(result => result.Race.Event.StartDate).ToArray();
         teams = await ResultsService.GetTeamsAsync(competitor);
     }
 

@@ -38,6 +38,13 @@
     </InputSelect>
     <br/>
 
+    <label class="form-text" for="individual-points">Individual Points Available</label>
+    <InputNumber class="form-control" id="individual-points" @bind-Value="entry.IndividualPointsOffered"/>
+    <br/>
+    
+    <label class="form-text" for="team-points">Team Points Available</label>
+    <InputNumber class="form-control" id="team-points" @bind-Value="entry.TeamPointsOffered"/>
+    <br/>
     
     <div class="row justify-content-center">
             <div class="col-3">
@@ -77,6 +84,8 @@
             entry.EventId = Guid.Empty;
             entry.StartDate = DateTime.MinValue;
             entry.EndDate = DateTime.MinValue;
+            entry.IndividualPointsOffered = 0;
+            entry.TeamPointsOffered = 0;
         }
         
         

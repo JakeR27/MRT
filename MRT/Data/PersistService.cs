@@ -157,6 +157,14 @@ public class PersistService
         LiteDb.Instance().Database.GetCollection<Result>("result").Update(result);
         LoadResults();
         return true;
+    }
+    public static bool UpdateEvent(Event ev)
+    {
+        if (ev.Id == Guid.Empty) return false;
+        
+        LiteDb.Instance().Database.GetCollection<Event>("event").Update(ev);
+        LoadEvents();
+        return true;
     } 
 
     public static void Load()
@@ -175,28 +183,29 @@ public class PersistService
     public static void LoadOrganisers()
     {
         _organisers.AddRange(
-            LiteDb.Instance().Database.GetCollection<Organiser>("organiser").FindAll()
+            LiteDb.Instance().Database.GetCollection<Organiser>("organiser").FindAll().OrderBy(organiser => organiser.Name)
             );
     }
     
     public static void LoadChampionships()
     {
         _championships.AddRange(
-            LiteDb.Instance().Database.GetCollection<Championship>("championship").FindAll()
+            LiteDb.Instance().Database.GetCollection<Championship>("championship").FindAll().OrderBy(championship => championship.Year).ThenBy(championship => championship.Name)
             );
     }
     
     public static void LoadLocations()
     {
         _locations.AddRange(
-            LiteDb.Instance().Database.GetCollection<Location>("location").FindAll()
+            LiteDb.Instance().Database.GetCollection<Location>("location").FindAll().OrderBy(location => location.Name)
             );
     }
     
     public static void LoadEvents()
     {
+        _events.Clear();
         _events.AddRange(
-            LiteDb.Instance().Database.GetCollection<Event>("event").FindAll().OrderBy(ev => ev.StartDate)
+            LiteDb.Instance().Database.GetCollection<Event>("event").FindAll().OrderBy(ev => ev.StartDate).ThenBy(ev => ev.Name)
             );
     }
     
@@ -211,21 +220,21 @@ public class PersistService
     public static void LoadRaces()
     {
         _races.AddRange(
-            LiteDb.Instance().Database.GetCollection<Race>("race").FindAll().OrderBy(race => race.Name)
+            LiteDb.Instance().Database.GetCollection<Race>("race").FindAll().OrderBy(race => race.Event.StartDate).ThenBy(race => race.Name)
             );
     }
     
     public static void LoadCompetitors()
     {
         _competitors.AddRange(
-            LiteDb.Instance().Database.GetCollection<Competitor>("competitor").FindAll()
+            LiteDb.Instance().Database.GetCollection<Competitor>("competitor").FindAll().OrderBy(competitor => competitor.Name)
             );
     }
 
     public static void LoadTeams()
     {
         _teams.AddRange(
-            LiteDb.Instance().Database.GetCollection<Team>("team").FindAll()
+            LiteDb.Instance().Database.GetCollection<Team>("team").FindAll().OrderBy(team => team.Name)
         );
     }
 }

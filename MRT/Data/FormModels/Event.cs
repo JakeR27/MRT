@@ -20,4 +20,16 @@ public class Event
             Name = Name
         };
     }
+    public Data.ResultModels.Event ToRecord(Guid id)
+    {
+        return new ResultModels.Event()
+        {
+            Id = id,
+            Championship = PersistService.GetChampionshipById(ChampionshipId),
+            Location = PersistService.GetLocationById(LocationId),
+            StartDate = StartDate,
+            EndDate = EndDate,
+            Name = Name
+        };
+    }
 }

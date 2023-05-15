@@ -7,6 +7,8 @@ public class Race
     public DateTime EndDate { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
+    public int IndividualPointsOffered { get; set; } = 0;
+    public int TeamPointsOffered { get; set; } = 0;
 
     public ResultModels.Race ToRecord()
     {
@@ -17,7 +19,9 @@ public class Race
             StartDate = StartDate,
             EndDate = EndDate,
             Name = Name,
-            Description = Description
+            Description = Description,
+            IndividualPointsOffered = IndividualPointsOffered,
+            TeamPointsOffered = TeamPointsOffered
         };
     }
 }

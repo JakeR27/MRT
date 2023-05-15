@@ -11,20 +11,30 @@
 {
     <ResultEditor inputResult="@ResultRecord" teams="@teams" competitors="@competitors" championships="@championships" onSubmitAction="@OnSubmit"/>
 }
+@if (EventId != null && EventRecord != null)
+{
+    <EventEditor inputEvent="@EventRecord" championships="@championships" locations="@locations" onSubmitAction="@OnSubmit"/>
+}
+
 
 @code {
     Guid? ResultId;
     Result? ResultRecord;
 
+    Guid? EventId;
+    Event? EventRecord;
+
     List<Team> teams;
     List<Competitor> competitors;
     List<Championship> championships;
+    List<Location> locations;
 
     protected override async Task OnInitializedAsync()
     {
         teams = (await ResultsService.GetTeamsAsync()).ToList();
         competitors = (await ResultsService.GetCompetitorsAsync()).ToList();
         championships = (await ResultsService.GetChampionshipsAsync()).ToList();
+        locations = (await ResultsService.GetLocationsAsync()).ToList();
         
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("resultId", out var _resultId))
@@ -32,11 +42,25 @@
             ResultId = Guid.Parse(_resultId);
             ResultRecord = await ResultsService.GetResultAsync(ResultId.Value);
         }
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("eventId", out var _eventId))
+        {
+            EventId = Guid.Parse(_eventId);
+            EventRecord = await ResultsService.GetEventAsync(EventId.Value);
+        }
+        
     }
 
     protected async Task OnSubmit()
     {
-        PersistService.LoadResults();
+        if (ResultId != null)
+        {
+            PersistService.LoadResults();
+        }
+        if (EventId != null)
+        {
+            PersistService.LoadEvents();
+        }
+        
         await OnInitializedAsync();
         StateHasChanged();
     }

@@ -44,6 +44,6 @@
     private string IgnoreNegativeAndZero(int num) => num > 0 ? $"{num}" : "-";
 
     private string StartPositionText(int pos) => IgnoreNegativeAndZero(pos);
-    private string PositionChangeText(int spos, int fpos) => spos > 0 ? $"{spos-fpos}" : "N/A";
+    private string PositionChangeText(int spos, int fpos) => spos > 0 ? $"{spos-fpos}" : "-";
     private string FinishPositionText(int ppos, int tpos) => ppos == tpos ? $"{IgnoreNegativeAndZero(ppos)}" : $"{tpos} ({ppos})";
 }

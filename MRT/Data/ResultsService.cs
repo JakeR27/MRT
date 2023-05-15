@@ -116,6 +116,11 @@ public class ResultsService
     {
         return Task.FromResult(_locations.FirstOrDefault(location => location.Id == id));
     }
+
+    public Task<Location[]> GetLocationsAsync()
+    {
+        return Task.FromResult(_locations);
+    }
     
     public Task<Competitor[]> GetCompetitorsAsync()
     {

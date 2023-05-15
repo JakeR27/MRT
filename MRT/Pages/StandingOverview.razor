@@ -1,0 +1,32 @@
+﻿@using MRT.Pages.Tables
+@using Microsoft.AspNetCore.WebUtilities
+@using MRT.Data
+@using MRT.Data.ResultModels
+@inject NavigationManager NavigationManager
+@inject ResultsService ResultsService
+
+@page "/championship"
+<h1>Championship Standings</h1>
+
+@if (championship != null)
+{
+    <StandingTable championship="championship"></StandingTable>
+}
+
+
+@code {
+    private Championship? championship;
+    private Guid championshipId;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("championshipId", out var _championshipId))
+        {
+            championshipId = Guid.Parse(_championshipId);
+        }
+        championship = await ResultsService.GetChampionshipAsync(championshipId);
+
+    }
+
+}

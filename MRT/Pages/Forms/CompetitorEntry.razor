@@ -7,6 +7,10 @@
         <label class="form-text" for="name">Competitor Name</label>
         <InputText class="form-control" id="name" @bind-Value="competitorEntry.Name"/>
         <br/>
+        @if (competitorAlreadyExists)
+        {
+            <p>Competitor already exists!</p>
+        }
         <button class="btn btn-primary" type="submit">Add</button>
     </EditForm>
 </div>
@@ -16,10 +20,19 @@
     [Parameter]
     public EventCallback onSubmitAction { get; set; }
 
+    [Parameter] 
+    public List<Data.ResultModels.Competitor> competitors { get; set; }
+
     Competitor competitorEntry = new();
+
+    bool competitorAlreadyExists => competitors.Find(competitor => competitor.Name == competitorEntry.Name) != null;
 
     private async void HandleCompetitorSubmit()
     {
+        if (competitorAlreadyExists)
+        {
+            return;
+        }
         var record = competitorEntry.ToRecord();
         competitorEntry.Name = "";
         PersistService.AddCompetitor(record);

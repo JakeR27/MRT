@@ -15,4 +15,6 @@ public record Race
     public DateTime EndDate { get; init; }
     public string Name { get; init; }
     public string Description { get; init; }
+    public int IndividualPointsOffered { get; init; } = 0;
+    public int TeamPointsOffered { get; init; } = 0;
 }

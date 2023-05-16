@@ -12,12 +12,26 @@
         }
     </tr>
     </thead>
+    <tbody>
+    @foreach (var competitor in competitorPoints)
+        {
+            <tr>
+                <td>@ResultsService.GetCompetitorAsync(competitor.Key).Result?.Name</td>
+                @foreach (var points in competitor.Value)
+                {
+                    <td>@points</td>
+                }
+            </tr>
+        }
+    </tbody>
 </table>
 
 @code {
     private List<Competitor> competitors { get; set; }
     private List<Race> races { get; set; }
     private List<Event> championshipEvents { get; set; }
+
+    private Dictionary<Guid, List<int>> competitorPoints { get; set; } = new();
 
     [Parameter] 
     public Championship championship { get; set; }
@@ -29,7 +43,25 @@
         competitors = (await ResultsService.GetCompetitorsAsync()).ToList();
         foreach (var ev in championshipEvents)
         {
-            var allRaces = (await ResultsService.GetRacesAsync(ev)).ToList();
+            Dictionary<Guid, int> competitorEventPoints = new();
+            
+            var allRaces = await ResultsService.GetRacesAsync(ev);
+            foreach (var race in allRaces)
+            {
+                var results = await ResultsService.GetResultsAsync(race);
+                foreach (var result in results)
+                {
+                    List<int> pointList;
+                    var points = result.Race.IndividualPointsOffered - result.FinishOnResultPosition;
+                    if (!competitorPoints.TryGetValue(result.Competitor.Id, out pointList))
+                    {
+                        pointList = new List<int>();
+                        competitorPoints.Add(result.Competitor.Id, pointList);
+                    }
+                    pointList.Add(points > 0 ? points : 0);
+                    //competitorPoints[result.Competitor]?.Add(points > 0 ? points : 0);
+                }
+            }
         }
         
     }

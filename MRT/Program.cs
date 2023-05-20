@@ -16,7 +16,9 @@ namespace MRT
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<WeatherForecastService>();
             builder.Services.AddSingleton<ResultsService>();
-            builder.Services.AddSingleton<PersistService>();
+            var db = new CachedDatabase(LiteDb.Instance());
+            builder.Services.AddSingleton(new PersistService(db));
+            
 
             var app = builder.Build();
 

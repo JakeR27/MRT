@@ -23,7 +23,7 @@ public class PersistService
     public static List<Competitor> Competitors => _competitors;
     public static List<Team> Teams => _teams;
     
-    private IDatabase _database;
+    private static IDatabase _database;
     
     public PersistService(IDatabase database)
     {

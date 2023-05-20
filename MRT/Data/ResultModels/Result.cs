@@ -2,7 +2,7 @@
 
 namespace MRT.Data.ResultModels;
 
-public record Result
+public record Result : IModel
 {
     public Guid Id { get; init; }
     public int StartPosition { get; init; }

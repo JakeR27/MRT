@@ -1,6 +1,6 @@
 ﻿namespace MRT.Data.ResultModels
 {
-    public record Location
+    public record Location : IModel
     {
         public Guid Id {get; init; }
         public string Name { get; init; }

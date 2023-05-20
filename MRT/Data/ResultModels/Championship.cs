@@ -3,7 +3,7 @@ using Microsoft.AspNetCore;
 
 namespace MRT.Data.ResultModels
 {
-    public record Championship
+    public record Championship : IModel
     {
         public Guid Id{ get; init; }
         public string Name { get; init; }

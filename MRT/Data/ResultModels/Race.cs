@@ -2,7 +2,7 @@
 
 namespace MRT.Data.ResultModels;
 
-public record Race
+public record Race : IModel
 {
     public Guid Id { get; init; }
     public Guid EventId { get; init; }

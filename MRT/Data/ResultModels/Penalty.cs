@@ -1,6 +1,6 @@
 ﻿namespace MRT.Data.ResultModels;
 
-public record Penalty
+public record Penalty : IModel
 {
     public Guid Id { get; init; }
     public string Name { get; init; }

@@ -1,7 +1,6 @@
 ﻿namespace MRT.Data.ResultModels;
 
-public record Team : IModel
+public interface IModel
 {
     public Guid Id { get; init; }
-    public string Name { get; init; }
 }

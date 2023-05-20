@@ -33,8 +33,9 @@ public class PersistService
     public static bool AddOrganiser(Organiser? organiser)
     {
         if (organiser == null) return false;
-        
-        LiteDb.Instance().Database.GetCollection<Organiser>("organiser").Insert(organiser);
+
+        _database.Insert(organiser, "organiser");
+        //LiteDb.Instance().Database.GetCollection<Organiser>("organiser").Insert(organiser);
         _organisers.Add(organiser);
         return true;
     }
@@ -43,7 +44,8 @@ public class PersistService
     {
         if (championship == null) return false;
 
-        LiteDb.Instance().Database.GetCollection<Championship>("championship").Insert(championship);
+        _database.Insert(championship, "championship");
+        //LiteDb.Instance().Database.GetCollection<Championship>("championship").Insert(championship);
         _championships.Add(championship);
         return true;
     }
@@ -52,7 +54,8 @@ public class PersistService
     {
         if (location == null) return false;
 
-        LiteDb.Instance().Database.GetCollection<Location>("location").Insert(location);
+        _database.Insert(location, "location");
+        //LiteDb.Instance().Database.GetCollection<Location>("location").Insert(location);
         _locations.Add(location);
         return true;
     }
@@ -61,7 +64,8 @@ public class PersistService
     {
         if (ev == null) return false;
 
-        LiteDb.Instance().Database.GetCollection<Event>("event").Insert(ev);
+        _database.Insert(ev, "event");
+        //LiteDb.Instance().Database.GetCollection<Event>("event").Insert(ev);
         _events.Add(ev);
         return true;
     }
@@ -69,8 +73,9 @@ public class PersistService
     public static bool AddRace(Race? race)
     {
         if (race == null) return false;
-        
-        LiteDb.Instance().Database.GetCollection<Race>("race").Insert(race);
+
+        _database.Insert(race, "race");
+        //LiteDb.Instance().Database.GetCollection<Race>("race").Insert(race);
         _races.Add(race);
         return true;
     }
@@ -78,8 +83,9 @@ public class PersistService
     public static bool AddResult(Result? result)
     {
         if (result == null) return false;
-        
-        LiteDb.Instance().Database.GetCollection<Result>("result").Insert(result);
+
+        _database.Insert(result, "result");
+        //LiteDb.Instance().Database.GetCollection<Result>("result").Insert(result);
         _results.Add(result);
         return true;
     }
@@ -87,8 +93,9 @@ public class PersistService
     public static bool AddCompetitor(Competitor? competitor)
     {
         if (competitor == null) return false;
-        
-        LiteDb.Instance().Database.GetCollection<Competitor>("competitor").Insert(competitor);
+
+        _database.Insert(competitor, "competitor");
+        // LiteDb.Instance().Database.GetCollection<Competitor>("competitor").Insert(competitor);
         _competitors.Add(competitor);
         return true;
     }
@@ -96,8 +103,9 @@ public class PersistService
     public static bool AddTeam(Team? team)
     {
         if (team == null) return false;
-        
-        LiteDb.Instance().Database.GetCollection<Team>("team").Insert(team);
+
+        _database.Insert(team, "team");
+        //LiteDb.Instance().Database.GetCollection<Team>("team").Insert(team);
         _teams.Add(team);
         return true;
     }

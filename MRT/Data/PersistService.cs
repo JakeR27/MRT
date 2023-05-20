@@ -23,10 +23,17 @@ public class PersistService
     public static List<Competitor> Competitors => _competitors;
     public static List<Team> Teams => _teams;
     
+    private IDatabase _database;
+    
+    public PersistService(IDatabase database)
+    {
+        _database = database;
+    }
+    
     public static bool AddOrganiser(Organiser? organiser)
     {
         if (organiser == null) return false;
-
+        
         LiteDb.Instance().Database.GetCollection<Organiser>("organiser").Insert(organiser);
         _organisers.Add(organiser);
         return true;

@@ -42,8 +42,9 @@ public class CachedDatabase : IDatabase
         {
             return (TData)record;
         }
-
-        return _database.Get<TData>(id, collection);
+        var result = _database.Get<TData>(id, collection);
+        if (result != null) _cache.Add(id, result);
+        return result;
     }
 
     public List<TData> Get<TData>(string collection) where TData : IModel

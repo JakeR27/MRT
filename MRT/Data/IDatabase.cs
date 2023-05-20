@@ -5,7 +5,7 @@ namespace MRT.Data;
 
 public interface IDatabase
 {
-    public void Insert<TData>(TData record, string collection);
+    public void Insert<TData>(TData record, string collection) where TData : IModel;
     public TData? Get<TData>(Guid id, string collection) where TData : IModel;
     public List<TData> Get<TData>(string collection);
     public List<TData> Get<TData>(string collection, Expression<Func<TData, bool>> predicate);

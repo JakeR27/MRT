@@ -22,9 +22,10 @@ public class LiteDb : IDatabase
         return _instance ??= new LiteDb();
     }
 
-    public void Insert<TData>(TData record, string collection) where TData : IModel
+    public bool Insert<TData>(TData record, string collection) where TData : IModel
     {
         Instance().Database.GetCollection<TData>(collection).Insert(record);
+        return true;
     }
 
     public TData Get<TData>(Guid id, string collection) where TData : IModel

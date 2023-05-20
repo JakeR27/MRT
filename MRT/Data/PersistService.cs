@@ -112,51 +112,65 @@ public class PersistService
 
     public static Organiser? GetOrganiserById(Guid? championshipOrganiserId)
     {
-        if (championshipOrganiserId == null) return null;
-        
-        //load from db
+        return championshipOrganiserId == null ? null :
+            //load from db
+            _database.Get<Organiser>(championshipOrganiserId.Value, "organiser");
+
         return LiteDb.Instance().Database
             .GetCollection<Organiser>("organiser")
             .FindOne(organiser => organiser.Id == championshipOrganiserId);
     }
     
-    public static Championship GetChampionshipById(Guid championshipId)
+    public static Championship? GetChampionshipById(Guid? championshipId)
     {
+        return championshipId == null ? null :
+            _database.Get<Championship>(championshipId.Value, "championship");
         return LiteDb.Instance().Database
             .GetCollection<Championship>("championship")
             .FindOne(championship => championship.Id == championshipId);
     }
     
-    public static Event GetEventById(Guid eventId)
+    public static Event? GetEventById(Guid? eventId)
     {
+        return eventId == null ? null :
+            _database.Get<Event>(eventId.Value, "event");
+
         return LiteDb.Instance().Database
             .GetCollection<Event>("event")
             .FindOne(ev => ev.Id == eventId);
     }
     
-    public static Competitor GetCompetitorById(Guid competitorId)
+    public static Competitor? GetCompetitorById(Guid? competitorId)
     {
+        return competitorId == null ? null :
+            _database.Get<Competitor>(competitorId.Value, "competitor");
         return LiteDb.Instance().Database
             .GetCollection<Competitor>("competitor")
             .FindOne(competitor => competitor.Id == competitorId);
     }
     
-    public static Team GetTeamById(Guid teamId)
+    public static Team? GetTeamById(Guid? teamId)
     {
+        return teamId == null ? null :
+            _database.Get<Team>(teamId.Value, "team");
         return LiteDb.Instance().Database
             .GetCollection<Team>("team")
             .FindOne(team => team.Id == teamId);
     }
 
-    public static Race GetRaceById(Guid raceId)
+    public static Race? GetRaceById(Guid? raceId)
     {
+        return raceId == null ? null :
+            _database.Get<Race>(raceId.Value, "race");
         return LiteDb.Instance().Database
             .GetCollection<Race>("race")
             .FindOne(race => race.Id == raceId);
     }
     
-    public static Location GetLocationById(Guid locationId)
+    public static Location? GetLocationById(Guid? locationId)
     {
+        return locationId == null ? null :
+            _database.Get<Location>(locationId.Value, "location");
         //if (locationId == null) return null;
         
         //load from db

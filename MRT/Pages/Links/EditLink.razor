@@ -1,0 +1,12 @@
+﻿@using MRT.Pages.Util
+
+<a href="@_queryParameter"><Icon IconName="pencil"/></a>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+    [Parameter]
+    public string table { get; set; }
+
+    private string _queryParameter => $"dataedit?{table}Id={Id}";
+}

@@ -8,18 +8,24 @@
         <th>Competitor</th>
         @foreach (var ev in championshipEvents)
         {
-            <th>@ev.Name</th>
+            <th>
+                @ev.Name
+                @ev.Id
+            </th>
         }
     </tr>
     </thead>
     <tbody>
-    @foreach (var competitor in competitorPoints)
+    @foreach (var competitor in competitorEventPoints)
         {
             <tr>
                 <td>@ResultsService.GetCompetitorAsync(competitor.Key).Result?.Name</td>
-                @foreach (var points in competitor.Value)
+                @foreach (var ev in championshipEvents)
                 {
-                    <td>@points</td>
+                    <td>
+                        @CompetitorEventPoints(competitor.Value, ev.Id)
+                        @ev.Id
+                    </td>
                 }
             </tr>
         }
@@ -28,10 +34,21 @@
 
 @code {
     private List<Competitor> competitors { get; set; }
-    private List<Race> races { get; set; }
     private List<Event> championshipEvents { get; set; }
 
     private Dictionary<Guid, List<int>> competitorPoints { get; set; } = new();
+
+    private Dictionary<Guid, Dictionary<Guid, int>> competitorEventPoints { get; set; } = new();
+
+    private int CompetitorEventPoints(Dictionary<Guid,int> eventPoints, Guid eventId)
+    {
+        var evPoints = -1;
+        if (eventPoints.TryGetValue(eventId, out var points))
+        {
+            evPoints = points;
+        }
+        return evPoints;
+    }
 
     [Parameter] 
     public Championship championship { get; set; }
@@ -41,25 +58,40 @@
     {
         championshipEvents = (await ResultsService.GetEventsAsync(championship)).ToList();
         competitors = (await ResultsService.GetCompetitorsAsync()).ToList();
-        foreach (var ev in championshipEvents)
+
+        foreach (var championshipEvent in championshipEvents)
         {
-            Dictionary<Guid, int> competitorEventPoints = new();
-            
-            var allRaces = await ResultsService.GetRacesAsync(ev);
-            foreach (var race in allRaces)
+            //find all the races in this event
+            var championshipRaces = await ResultsService.GetRacesAsync(championshipEvent);
+
+            foreach (var championshipRace in championshipRaces)
             {
-                var results = await ResultsService.GetResultsAsync(race);
-                foreach (var result in results)
+                //find all the results in this race
+                var raceResults = await ResultsService.GetResultsAsync(championshipRace);
+                foreach (var championshipResult in raceResults)
                 {
-                    List<int> pointList;
-                    var points = result.Race.IndividualPointsOffered - result.FinishOnResultPosition;
-                    if (!competitorPoints.TryGetValue(result.Competitor.Id, out pointList))
+                    var additionalCompetitorPoints = championshipRace.IndividualPointsOffered;
+                    if (additionalCompetitorPoints != 0)
                     {
-                        pointList = new List<int>();
-                        competitorPoints.Add(result.Competitor.Id, pointList);
+                        additionalCompetitorPoints -= championshipResult.FinishOnResultPosition;
+                    } 
+                    
+                    if (competitorEventPoints.TryGetValue(championshipResult.CompetitorId, out var competitorPoints))
+                    {
+                        if (competitorPoints.TryGetValue(championshipEvent.Id, out var points))
+                        {
+                            points += additionalCompetitorPoints;
+                        }
+                        else
+                        {
+                            competitorPoints.Add(championshipEvent.Id, additionalCompetitorPoints);
+                        }
                     }
-                    pointList.Add(points > 0 ? points : 0);
-                    //competitorPoints[result.Competitor]?.Add(points > 0 ? points : 0);
+                    else
+                    {
+                        var newEventPointsDict = new Dictionary<Guid, int>();
+                        competitorEventPoints.Add(championshipResult.CompetitorId, newEventPointsDict);
+                    }
                 }
             }
         }

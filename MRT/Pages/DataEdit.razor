@@ -11,6 +11,10 @@
 {
     <ResultEditor inputResult="@ResultRecord" teams="@teams" competitors="@competitors" championships="@championships" onSubmitAction="@OnSubmit"/>
 }
+@if (RaceId != null && RaceRecord != null)
+{
+    <RaceEditor inputRace="@RaceRecord" championships="@championships" onSubmitAction="@OnSubmit"/>
+}
 @if (EventId != null && EventRecord != null)
 {
     <EventEditor inputEvent="@EventRecord" championships="@championships" locations="@locations" onSubmitAction="@OnSubmit"/>
@@ -21,6 +25,9 @@
     Guid? ResultId;
     Result? ResultRecord;
 
+    Guid? RaceId;
+    Race? RaceRecord;
+    
     Guid? EventId;
     Event? EventRecord;
 
@@ -42,12 +49,17 @@
             ResultId = Guid.Parse(_resultId);
             ResultRecord = await ResultsService.GetResultAsync(ResultId.Value);
         }
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("raceId", out var _raceId))
+        {
+            RaceId = Guid.Parse(_raceId);
+            RaceRecord = await ResultsService.GetRaceAsync(RaceId.Value);
+        }
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("eventId", out var _eventId))
         {
             EventId = Guid.Parse(_eventId);
             EventRecord = await ResultsService.GetEventAsync(EventId.Value);
         }
-        
+
     }
 
     protected async Task OnSubmit()

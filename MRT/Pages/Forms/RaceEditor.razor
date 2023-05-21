@@ -1,0 +1,144 @@
+﻿@using MRT.Data.FormModels
+@using MRT.Data
+@inject ResultsService ResultsService
+@inject IJSRuntime JS
+
+<h3>Edit Race</h3>
+<div class="form-group col-xl-8">
+    <label class="form-text" for="race-id">Race</label>
+    
+    <table>
+        <thead>
+        <tr>
+            <th>Championship</th>
+            <th></th>
+            <th>Event</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <InputSelect class="form-select" id="championship-selector" @bind-Value="selectedChampionship">
+                    <option value="@Guid.Empty" disabled hidden>CHAMPIONSHIP</option>
+                    @foreach (var championship in championships)
+                    {
+                        <option value="@championship.Id">@championship.Name (@championship.Year)</option>
+                    }
+                </InputSelect>
+            </td>
+            <td>
+                <button class="btn btn-secondary" type="button" @onclick="ChampionshipSelectionChanged"><span class="oi oi-arrow-right" aria-hidden="true"></span></button>
+            </td>
+            <td>
+                <InputSelect class="form-select" id="event-selector" @bind-Value="selectedEvent">
+                    <option value="@Guid.Empty" disabled hidden>EVENT</option>
+                    @foreach (var ev in events)
+                    {
+                        <option value="@ev.Id">@ev.Name (@ev.Location.Name)</option>
+                    }
+                </InputSelect>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <br/>
+    <label class="form-text" for="name">Name</label>
+    <InputText class="form-control" id="name" @bind-Value="formRace.Name"/>
+    
+    <br/>
+    <label class="form-text" for="start-date">Start Date</label>
+    <div class="input-group">
+            <InputDate class="form-control" id="start-date" Type="InputDateType.DateTimeLocal" @bind-Value="formRace.StartDate"/>
+            <button class="btn btn-secondary" type="button" @onclick="() => formRace.StartDate = DateTime.UtcNow">Set Now</button>
+        </div>
+
+    <br/>
+    <label class="form-text" for="end-date">End Date</label>
+    <div class="input-group">
+        <InputDate class="form-control" id="end-date" Type="InputDateType.DateTimeLocal" @bind-Value="formRace.EndDate"/>
+        <button class="btn btn-secondary" type="button" @onclick="() => formRace.EndDate = formRace.StartDate">Copy Start Date</button>
+    </div>
+    
+    
+    <br/>
+    <div class="input-group"></div>
+    <label class="form-text" for="description">Description</label>
+    <InputText class="form-control" id="description" @bind-Value="formRace.Description"/>
+    
+    <br/>
+    <label class="form-text" for="event-id">Event</label>
+    <InputSelect class="form-control" id="event-id" @bind-Value="formRace.EventId">
+        @foreach (var ev in events)
+        {
+            <option value="@ev.Id">@ev.Name (@ev.Championship.Name - @ev.Championship.Year)</option>
+        }
+    </InputSelect>
+    <br/>
+
+    <label class="form-text" for="individual-points">Individual Points Available</label>
+    <InputNumber class="form-control" id="individual-points" @bind-Value="formRace.IndividualPointsOffered"/>
+    <br/>
+    
+    <label class="form-text" for="team-points">Team Points Available</label>
+    <InputNumber class="form-control" id="team-points" @bind-Value="formRace.TeamPointsOffered"/>
+    <br/>
+    <EditForm Model="@formRace" OnSubmit="@HandleSubmit">
+        <button class="btn btn-primary" type="submit">Submit Result(s)</button>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback onSubmitAction { get; set; }
+
+    [Parameter]
+    public Data.ResultModels.Race inputRace { get; set; }
+
+    public Data.FormModels.Race formRace { get; set; } = new();
+    
+    public List<Data.ResultModels.Race> races { get; set; } = new();
+    public List<Data.ResultModels.Event> events { get; set; } = new();
+    [Parameter]
+    public List<Data.ResultModels.Championship> championships { get; set; }
+    
+    private Guid selectedChampionship;
+    private Guid selectedEvent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        formRace.Name = inputRace.Name;
+        formRace.Description = inputRace.Description;
+        formRace.StartDate = inputRace.StartDate;
+        formRace.EndDate = inputRace.EndDate;
+        formRace.IndividualPointsOffered = inputRace.IndividualPointsOffered;
+        formRace.TeamPointsOffered = inputRace.TeamPointsOffered;
+        
+
+        selectedChampionship = inputRace.Event.ChampionshipId;
+        ChampionshipSelectionChanged();
+        selectedEvent = inputRace.EventId;
+    }
+
+    private async void ChampionshipSelectionChanged()
+    {
+        var championship = await ResultsService.GetChampionshipAsync(selectedChampionship);
+        events = (await ResultsService.GetEventsAsync(championship)).ToList();
+        selectedEvent = Guid.Empty;
+        StateHasChanged();
+    }
+
+    private async void HandleSubmit()
+    {
+        if (selectedEvent == Guid.Empty)
+        {
+            return;
+        }
+        
+        formRace.EventId = selectedEvent;
+        PersistService.UpdateRace(formRace.ToRecord(inputRace.Id));
+
+
+        await onSubmitAction.InvokeAsync();
+        
+    }
+}

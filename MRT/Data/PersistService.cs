@@ -179,6 +179,15 @@ public class PersistService
             .FindOne(location => location.Id == locationId);
     }
 
+    public static bool UpdateRace(Race race)
+    {
+        if (race.Id == Guid.Empty) return false;
+
+        var db = _database.Update(race, "race");
+        LoadRaces();
+        return db;
+    }
+
     public static bool UpdateResult(Result result)
     {
         if (result.Id == Guid.Empty) return false;
@@ -248,6 +257,7 @@ public class PersistService
 
     public static void LoadRaces()
     {
+        _races.Clear();
         _races.AddRange(
             LiteDb.Instance().Database.GetCollection<Race>("race").FindAll().OrderBy(race => race.Event.StartDate).ThenBy(race => race.Name)
             );

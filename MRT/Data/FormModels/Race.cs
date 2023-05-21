@@ -24,4 +24,18 @@ public class Race
             TeamPointsOffered = TeamPointsOffered
         };
     }
+    public ResultModels.Race ToRecord(Guid id)
+    {
+        return new ResultModels.Race()
+        {
+            Id = id,
+            Event = PersistService.GetEventById(EventId),
+            StartDate = StartDate,
+            EndDate = EndDate,
+            Name = Name,
+            Description = Description,
+            IndividualPointsOffered = IndividualPointsOffered,
+            TeamPointsOffered = TeamPointsOffered
+        };
+    }
 }

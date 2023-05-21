@@ -1,5 +1,6 @@
 ﻿@using MRT.Data.ResultModels
 @using MRT.Data
+@using MRT.Pages.Links
 @inject ResultsService ResultsService
 
 <table class="table">
@@ -9,24 +10,28 @@
         @foreach (var ev in championshipEvents)
         {
             <th>
-                @ev.Name
-                @ev.Id
+                <EventLink ev="ev"></EventLink>
+                @* @ev.Id *@
             </th>
         }
+        <th>Sum</th>
     </tr>
     </thead>
     <tbody>
     @foreach (var competitor in competitorEventPoints)
         {
             <tr>
-                <td>@ResultsService.GetCompetitorAsync(competitor.Key).Result?.Name</td>
+                <td>
+                    <CompetitorLink Competitor="@ResultsService.GetCompetitorAsync(competitor.Key).Result"/>
+                </td>
                 @foreach (var ev in championshipEvents)
                 {
                     <td>
                         @PointsFormat(CompetitorEventPoints(competitor.Value, ev.Id))
-                        @ev.Id
+                        @* @ev.Id *@
                     </td>
                 }
+                <td>SUM</td>
             </tr>
         }
     </tbody>
@@ -38,6 +43,7 @@
 
     private Dictionary<Guid, List<int>> competitorPoints { get; set; } = new();
 
+    // key: competitorId, value: dictionary of event points, key: eventId, value: points
     private Dictionary<Guid, Dictionary<Guid, int>> competitorEventPoints { get; set; } = new();
 
     private string PointsFormat(int points) => points == -1 ? "-" : points.ToString();
@@ -54,8 +60,12 @@
 
     [Parameter] 
     public Championship championship { get; set; }
-    
 
+    private int CompetitorPointsSum(Guid competitor)
+    {
+        return 0;
+    }
+    
     protected override async Task OnInitializedAsync()
     {
         championshipEvents = (await ResultsService.GetEventsAsync(championship)).ToList();
@@ -78,22 +88,34 @@
                         additionalCompetitorPoints -= championshipResult.FinishOnResultPosition;
                         additionalCompetitorPoints += 1; // 1st place should have 0 points taken, 2nd only 1 point taken etc.
                     } 
+                    //prevent negative points
+                    if (additionalCompetitorPoints < 0)
+                    {
+                        additionalCompetitorPoints = 0;
+                    }
+
+                    if (championshipResult.Competitor.Name == "Roman Sergeev")
+                    {
+                        ;
+                    }
                     
                     if (competitorEventPoints.TryGetValue(championshipResult.CompetitorId, out var competitorPoints))
                     {
-                        if (competitorPoints.TryGetValue(championshipEvent.Id, out var points))
-                        {
-                            points += additionalCompetitorPoints;
-                        }
-                        else
-                        {
-                            competitorPoints.Add(championshipEvent.Id, additionalCompetitorPoints);
-                        }
+                        
                     }
                     else
                     {
                         var newEventPointsDict = new Dictionary<Guid, int>();
                         competitorEventPoints.Add(championshipResult.CompetitorId, newEventPointsDict);
+                    }
+                    
+                    if (competitorEventPoints[championshipResult.CompetitorId].TryGetValue(championshipEvent.Id, out var points))
+                    {
+                        competitorEventPoints[championshipResult.CompetitorId][championshipEvent.Id] += additionalCompetitorPoints;
+                    }
+                    else
+                    {
+                        competitorEventPoints[championshipResult.CompetitorId].Add(championshipEvent.Id, additionalCompetitorPoints);
                     }
                 }
             }

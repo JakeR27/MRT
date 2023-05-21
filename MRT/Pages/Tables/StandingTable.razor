@@ -23,7 +23,7 @@
                 @foreach (var ev in championshipEvents)
                 {
                     <td>
-                        @CompetitorEventPoints(competitor.Value, ev.Id)
+                        @PointsFormat(CompetitorEventPoints(competitor.Value, ev.Id))
                         @ev.Id
                     </td>
                 }
@@ -40,6 +40,8 @@
 
     private Dictionary<Guid, Dictionary<Guid, int>> competitorEventPoints { get; set; } = new();
 
+    private string PointsFormat(int points) => points == -1 ? "-" : points.ToString();
+    
     private int CompetitorEventPoints(Dictionary<Guid,int> eventPoints, Guid eventId)
     {
         var evPoints = -1;
@@ -74,6 +76,7 @@
                     if (additionalCompetitorPoints != 0)
                     {
                         additionalCompetitorPoints -= championshipResult.FinishOnResultPosition;
+                        additionalCompetitorPoints += 1; // 1st place should have 0 points taken, 2nd only 1 point taken etc.
                     } 
                     
                     if (competitorEventPoints.TryGetValue(championshipResult.CompetitorId, out var competitorPoints))

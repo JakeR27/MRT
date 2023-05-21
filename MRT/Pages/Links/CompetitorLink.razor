@@ -1,0 +1,11 @@
+﻿@using MRT.Data.ResultModels
+
+@if (Competitor != null)
+{
+    <a href="competitor?competitorId=@Competitor.Id">@Competitor.Name</a>
+}
+
+@code {
+    [Parameter]
+    public Competitor? Competitor { get; set; }
+}

@@ -3,19 +3,21 @@
 
 <table class="table">
         <thead>
-            <tr>
-                <th>Name</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Description</th>
-                <th>Event</th>
-                <th>Championship</th>
-            </tr>
+        <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Description</th>
+            <th>Event</th>
+            <th>Championship</th>
+        </tr>
         </thead>
         <tbody>
             @foreach (var race in races)
             {
                 <tr>
+                    <td><EditLink Id="@race.Id" table="race"></EditLink></td>
                     <td><RaceLink race="@race"/></td>
                     <td>@race.StartDate.ToUniversalTime()</td>
                     <td>@race.EndDate.ToUniversalTime()</td>

@@ -18,7 +18,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var competitor in competitorEventPoints)
+    @foreach (var competitor in competitorPointsSum.OrderByDescending(key=>key.Value))
         {
             <tr>
                 <td>
@@ -27,11 +27,11 @@
                 @foreach (var ev in championshipEvents)
                 {
                     <td>
-                        @PointsFormat(CompetitorEventPoints(competitor.Value, ev.Id))
+                        @PointsFormat(CompetitorEventPoints(competitorEventPoints[competitor.Key], ev.Id))
                         @* @ev.Id *@
                     </td>
                 }
-                <td>SUM</td>
+                <td>@PointsFormat(CompetitorPointsSum(competitor.Key))</td>
             </tr>
         }
     </tbody>
@@ -45,6 +45,8 @@
 
     // key: competitorId, value: dictionary of event points, key: eventId, value: points
     private Dictionary<Guid, Dictionary<Guid, int>> competitorEventPoints { get; set; } = new();
+    
+    private Dictionary<Guid, int> competitorPointsSum { get; set; } = new();
 
     private string PointsFormat(int points) => points == -1 ? "-" : points.ToString();
     
@@ -57,15 +59,20 @@
         }
         return evPoints;
     }
+    
+    private int CompetitorPointsSum(Guid competitorId)
+    {
+        var sum = -1;
+        if (competitorPointsSum.TryGetValue(competitorId, out var points))
+        {
+            sum = points;
+        }
+        return sum;
+    }
 
     [Parameter] 
     public Championship championship { get; set; }
 
-    private int CompetitorPointsSum(Guid competitor)
-    {
-        return 0;
-    }
-    
     protected override async Task OnInitializedAsync()
     {
         championshipEvents = (await ResultsService.GetEventsAsync(championship)).ToList();
@@ -93,12 +100,8 @@
                     {
                         additionalCompetitorPoints = 0;
                     }
-
-                    if (championshipResult.Competitor.Name == "Roman Sergeev")
-                    {
-                        ;
-                    }
                     
+                    // make sure there is a dictionary to record points for this competitor
                     if (competitorEventPoints.TryGetValue(championshipResult.CompetitorId, out var competitorPoints))
                     {
                         
@@ -108,7 +111,8 @@
                         var newEventPointsDict = new Dictionary<Guid, int>();
                         competitorEventPoints.Add(championshipResult.CompetitorId, newEventPointsDict);
                     }
-                    
+
+                    // add points gained at this event to dictionary
                     if (competitorEventPoints[championshipResult.CompetitorId].TryGetValue(championshipEvent.Id, out var points))
                     {
                         competitorEventPoints[championshipResult.CompetitorId][championshipEvent.Id] += additionalCompetitorPoints;
@@ -116,6 +120,16 @@
                     else
                     {
                         competitorEventPoints[championshipResult.CompetitorId].Add(championshipEvent.Id, additionalCompetitorPoints);
+                    }
+                    
+                    // add event points to sum
+                    if (competitorPointsSum.TryGetValue(championshipResult.CompetitorId, out var sum))
+                    {
+                        competitorPointsSum[championshipResult.CompetitorId] += additionalCompetitorPoints;
+                    }
+                    else
+                    {
+                        competitorPointsSum.Add(championshipResult.CompetitorId, additionalCompetitorPoints);
                     }
                 }
             }

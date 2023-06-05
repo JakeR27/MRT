@@ -4,63 +4,65 @@
 
 <h3>New Race</h3>
 <div class="form-group col-xl-6">
-<EditForm Model="@entry" OnSubmit="@HandleSubmit">
-    <label class="form-text" for="name">Name</label>
-    <InputText class="form-control" id="name" @bind-Value="entry.Name"/>
-    
-    <br/>
-    <label class="form-text" for="start-date">Start Date</label>
-    <div class="input-group">
+    <EditForm Model="@entry" OnSubmit="@HandleSubmit">
+        
+        <label class="form-text" for="event-id">Event</label>
+        <InputSelect class="form-control" id="event-id" @bind-Value="entry.EventId">
+            @foreach (var ev in events)
+            {
+                <option value="@ev.Id">@ev.Name (@ev.Championship.Name - @ev.Championship.Year)</option>
+            }
+        </InputSelect>
+        <br/>
+        <label class="form-text" for="name">Name</label>
+        <InputText class="form-control" id="name" @bind-Value="entry.Name"/>
+
+        <br/>
+        <label class="form-text" for="start-date">Start Date</label>
+        <div class="input-group">
             <InputDate class="form-control" id="start-date" Type="InputDateType.DateTimeLocal" @bind-Value="entry.StartDate"/>
-            <button class="btn btn-secondary" type="button" @onclick="() => entry.StartDate = DateTime.UtcNow">Set Now</button>
+            <button class="btn btn-secondary" type="button" @onclick="() => entry.StartDate = events.Find(ev => ev.Id == entry.EventId).StartDate">Copy Event Date</button>
         </div>
 
-    <br/>
-    <label class="form-text" for="end-date">End Date</label>
-    <div class="input-group">
-        <InputDate class="form-control" id="end-date" Type="InputDateType.DateTimeLocal" @bind-Value="entry.EndDate"/>
-        <button class="btn btn-secondary" type="button" @onclick="() => entry.EndDate = entry.StartDate">Copy Start Date</button>
-    </div>
-    
-    
-    <br/>
-    <div class="input-group"></div>
-    <label class="form-text" for="description">Description</label>
-    <InputText class="form-control" id="description" @bind-Value="entry.Description"/>
-    
-    <br/>
-    <label class="form-text" for="event-id">Event</label>
-    <InputSelect class="form-control" id="event-id" @bind-Value="entry.EventId">
-        @foreach (var ev in events)
-        {
-            <option value="@ev.Id">@ev.Name (@ev.Championship.Name - @ev.Championship.Year)</option>
-        }
-    </InputSelect>
-    <br/>
+        <br/>
+        <label class="form-text" for="end-date">End Date</label>
+        <div class="input-group">
+            <InputDate class="form-control" id="end-date" Type="InputDateType.DateTimeLocal" @bind-Value="entry.EndDate"/>
+            <button class="btn btn-secondary" type="button" @onclick="() => entry.EndDate = entry.StartDate">Copy Start Date</button>
+        </div>
 
-    <label class="form-text" for="individual-points">Individual Points Available</label>
-    <InputNumber class="form-control" id="individual-points" @bind-Value="entry.IndividualPointsOffered"/>
-    <br/>
-    
-    <label class="form-text" for="team-points">Team Points Available</label>
-    <InputNumber class="form-control" id="team-points" @bind-Value="entry.TeamPointsOffered"/>
-    <br/>
-    
-    <div class="row justify-content-center">
+
+        <br/>
+        <div class="input-group"></div>
+        <label class="form-text" for="description">Description</label>
+        <InputText class="form-control" id="description" @bind-Value="entry.Description"/>
+
+        <br/>
+
+
+        <label class="form-text" for="individual-points">Individual Points Available</label>
+        <InputNumber class="form-control" id="individual-points" @bind-Value="entry.IndividualPointsOffered"/>
+        <br/>
+
+        <label class="form-text" for="team-points">Team Points Available</label>
+        <InputNumber class="form-control" id="team-points" @bind-Value="entry.TeamPointsOffered"/>
+        <br/>
+
+        <div class="row justify-content-center">
             <div class="col-3">
                 <button class="btn btn-primary w-100" type="submit">Add</button>
             </div>
             <div class="col-1 form-switch">
-                <InputCheckbox class="form-check-input" id="event-lock"  @bind-Value="keepFieldsOnSubmit"></InputCheckbox>
+                <InputCheckbox class="form-check-input" id="event-lock" @bind-Value="keepFieldsOnSubmit"></InputCheckbox>
                 <label class="form-check-label" for="event-lock">
                     <LockIcon condition="@keepFieldsOnSubmit"/>
                 </label>
             </div>
         </div>
 
-    <br/>
-    
-</EditForm>
+        <br/>
+
+    </EditForm>
 </div>
 
 @code {

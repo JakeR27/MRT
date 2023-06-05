@@ -97,6 +97,7 @@ public class PersistService
         _database.Insert(competitor, "competitor");
         // LiteDb.Instance().Database.GetCollection<Competitor>("competitor").Insert(competitor);
         _competitors.Add(competitor);
+        _competitors.Sort((c1, c2) => String.Compare(c1.Name, c2.Name, StringComparison.InvariantCulture));
         return true;
     }
 

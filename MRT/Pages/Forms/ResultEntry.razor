@@ -96,6 +96,7 @@
     </table>
     <br/>
     <EditForm Model="@entry" OnSubmit="@HandleSubmit">
+        <button class="btn btn-warning" type="button" @onclick="AddTdyRows">Add TDY Rows</button>
         <button class="btn btn-secondary" type="button" @onclick="AddRow">Add Row</button>
         <button class="btn btn-secondary" type="button" @onclick="RemoveRow">Remove Row</button>
         <button class="btn btn-primary" type="submit">Submit Result(s)</button>
@@ -128,6 +129,16 @@
     private void AddRow()
     {
         tableResults.Add(new Result());
+    }
+
+    private void AddTdyRows()
+    {
+        tableResults.Clear();
+        var tdyTeam = teams.Find(t => t.Name == "TDY");
+        for (int i = 1; i < 21; i++)
+        {
+            tableResults.Add(new Result() {TeamId = tdyTeam.Id, FinishOnTrackPosition = i, FinishOnResultPosition = i});
+        }
     }
     
     private void RemoveRow()
